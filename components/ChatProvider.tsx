@@ -1,6 +1,7 @@
 "use client";
 
-import { useChatRuntime } from "@assistant-ui/react-ai-sdk";
+import { useChat } from "@ai-sdk/react";
+import { useAISDKRuntime } from "@assistant-ui/react-ai-sdk";
 import { AssistantRuntimeProvider } from "@assistant-ui/react";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
@@ -9,9 +10,11 @@ export default function ChatProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const runtime = useChatRuntime({
+  const chat = useChat({
     api: "/api/chat",
   });
+
+  const runtime = useAISDKRuntime(chat);
 
   return (
     <AssistantRuntimeProvider runtime={runtime}>

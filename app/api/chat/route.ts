@@ -1,20 +1,26 @@
 import { openai } from "@ai-sdk/openai";
-import { streamText } from "ai";
+import { convertToModelMessages, streamText } from "ai";
+import { frontendTools } from "@assistant-ui/react-ai-sdk";
 
 export const maxDuration = 30;
 
 export async function POST(req: Request) {
   try {
-    const { messages } = await req.json();
+    const { messages, tools } = await req.json();
 
     const result = streamText({
       model: openai("gpt-4o-mini"),
-      messages: messages,
+      messages: convertToModelMessages(messages),
+      maxOutputTokens: 1200,
+      tools: {
+        ...frontendTools(tools),
+      },
+      onError: console.error,
     });
 
-    return result.toDataStreamResponse();
+    return result.toUIMessageStreamResponse();
   } catch (error) {
-    console.error("Chat API error:", error);
-    return new Response("Internal Server Error", { status: 500 });
+    console.error("Error:", error);
+    return new Response("Internal server error", { status: 500 });
   }
 }

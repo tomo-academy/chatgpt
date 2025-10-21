@@ -5,10 +5,22 @@ import { PlusIcon } from "lucide-react";
 import { ComposerPrimitive, MessagePrimitive } from "@assistant-ui/react";
 import { TooltipIconButton } from "@/components/assistant-ui/tooltip-icon-button";
 
+const AttachmentUI: FC = () => {
+  return (
+    <div className="aui-attachment-root relative">
+      <div className="aui-attachment-tile size-14 cursor-pointer overflow-hidden rounded-[14px] border bg-muted">
+        <div className="flex h-full w-full items-center justify-center">
+          <span className="text-xs">File</span>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export const UserMessageAttachments: FC = () => {
   return (
     <div className="aui-user-message-attachments-end col-span-full col-start-1 row-start-1 flex w-full flex-row justify-end gap-2">
-      <MessagePrimitive.Attachments />
+      <MessagePrimitive.Attachments components={{ Attachment: AttachmentUI }} />
     </div>
   );
 };
@@ -16,7 +28,7 @@ export const UserMessageAttachments: FC = () => {
 export const ComposerAttachments: FC = () => {
   return (
     <div className="aui-composer-attachments mb-2 flex w-full flex-row items-center gap-2 overflow-x-auto px-1.5 pt-0.5 pb-1 empty:hidden">
-      <ComposerPrimitive.Attachments />
+      <ComposerPrimitive.Attachments components={{ Attachment: AttachmentUI }} />
     </div>
   );
 };
