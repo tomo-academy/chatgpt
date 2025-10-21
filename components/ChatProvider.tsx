@@ -10,9 +10,7 @@ export default function ChatProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const chat = useChat({
-    api: "/api/chat",
-  });
+  const chat = useChat();
 
   const runtime = useAISDKRuntime(chat);
 
