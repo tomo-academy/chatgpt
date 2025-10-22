@@ -1,8 +1,21 @@
 // Simple localStorage-based chat persistence
+
+interface Message {
+  content?: Array<{ text?: string }>;
+  [key: string]: unknown;
+}
+
+interface Conversation {
+  id: string;
+  messages: Message[];
+  timestamp: string;
+  title: string;
+}
+
 export class ChatPersistence {
   private static STORAGE_KEY = 'chatgpt-conversations';
 
-  static saveConversation(messages: any[]) {
+  static saveConversation(messages: Message[]) {
     try {
       const conversations = this.getConversations();
       const timestamp = new Date().toISOString();
@@ -23,7 +36,7 @@ export class ChatPersistence {
     }
   }
 
-  static getConversations(): Record<string, any> {
+  static getConversations(): Record<string, Conversation> {
     try {
       const stored = localStorage.getItem(this.STORAGE_KEY);
       return stored ? JSON.parse(stored) : {};

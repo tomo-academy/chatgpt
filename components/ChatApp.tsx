@@ -1,6 +1,6 @@
 "use client";
 
-import { Thread } from "@/components/assistant-ui/thread";
+import { ChatGPTInterface } from "./ChatGPTInterface";
 import ChatProvider from "@/components/ChatProvider";
 import { useEffect, useState } from "react";
 
@@ -22,7 +22,7 @@ export default function ChatApp() {
   return (
     <ChatProvider>
       <main className="h-screen">
-        <Thread />
+        <ChatGPTInterface />
       </main>
     </ChatProvider>
   );

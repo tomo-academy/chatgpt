@@ -12,9 +12,9 @@ export async function POST(req: Request) {
       model: openai("gpt-4o-mini"),
       messages: convertToModelMessages(messages),
       maxOutputTokens: 1200,
-      tools: {
+      tools: tools ? {
         ...frontendTools(tools),
-      },
+      } : undefined,
       onError: console.error,
     });
 

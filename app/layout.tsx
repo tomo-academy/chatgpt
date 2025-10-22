@@ -1,4 +1,13 @@
 import "./globals.css";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "ChatGPT Clone",
+  description: "A ChatGPT clone built with assistant-ui and Next.js",
+  icons: {
+    icon: "/favicon.svg",
+  },
+};
 
 export default function RootLayout({
   children,
