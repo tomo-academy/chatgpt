@@ -10,16 +10,12 @@ export async function POST(req: Request) {
     const { messages, tools, model = "gpt-4o-mini" } = await req.json();
 
     // Select the appropriate model based on the model parameter
-    let selectedModel;
-    
-    if (model.startsWith("gemini")) {
-      selectedModel = google(model);
-    } else {
-      selectedModel = openai(model);
-    }
+    const selectedModel = model.startsWith("gemini") 
+      ? google(model)
+      : openai(model);
 
     const result = streamText({
-      model: selectedModel,
+      model: selectedModel as any,
       messages: convertToModelMessages(messages),
       maxOutputTokens: 1200,
       tools: tools ? {
