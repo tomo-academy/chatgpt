@@ -2,8 +2,8 @@ import "./globals.css";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "ChatGPT Clone",
-  description: "A ChatGPT clone built with assistant-ui and Next.js",
+  title: "NEXAGPT - AI Assistant",
+  description: "NEXAGPT - Advanced AI Assistant powered by OpenAI GPT and Google Gemini models",
   icons: {
     icon: "/favicon.svg",
   },

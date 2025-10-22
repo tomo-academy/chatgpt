@@ -39,10 +39,10 @@ const ButtonWithTooltip: FC<ButtonWithTooltipProps> = ({
 const TopLeft: FC = () => {
   return (
     <div className="flex h-full w-full items-center gap-2 px-3 text-sm font-semibold">
-      <div className="inline size-4 bg-blue-500 rounded-sm flex items-center justify-center">
-        <span className="text-white text-xs">🤖</span>
+      <div className="inline size-4 bg-gradient-to-r from-blue-500 to-purple-600 rounded-sm flex items-center justify-center">
+        <span className="text-white text-xs font-bold">N</span>
       </div>
-      <span>ChatGPT</span>
+      <span>NEXAGPT</span>
     </div>
   );
 };
