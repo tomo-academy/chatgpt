@@ -4,7 +4,7 @@ import { useChat } from "@ai-sdk/react";
 import { useAISDKRuntime } from "@assistant-ui/react-ai-sdk";
 import { AssistantRuntimeProvider } from "@assistant-ui/react";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState } from "react";
 
 interface ChatContextType {
   currentModel: string;
@@ -25,12 +25,11 @@ export default function ChatProvider({
 }) {
   const [currentModel, setCurrentModel] = useState("gpt-4o-mini");
 
-  // Store the current model globally for the API route to access
-  useEffect(() => {
-    (globalThis as Record<string, unknown>).currentModel = currentModel;
-  }, [currentModel]);
-
-  const chat = useChat();
+  const chat = useChat({
+    body: {
+      model: currentModel,
+    },
+  });
 
   const runtime = useAISDKRuntime(chat);
 

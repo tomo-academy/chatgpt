@@ -7,18 +7,15 @@ export const maxDuration = 30;
 
 export async function POST(req: Request) {
   try {
-    const { messages, tools, model } = await req.json();
-    
-    // Get the model from the request or fallback to global or default
-    const selectedModelId = model || (globalThis as Record<string, unknown>).currentModel as string || "gpt-4o-mini";
-    
+    const { messages, tools, model = "gpt-4o-mini" } = await req.json();
+
     // Select the appropriate model based on the model parameter
     let selectedModel: LanguageModel;
     
-    if (selectedModelId.startsWith("gemini")) {
-      selectedModel = google(selectedModelId) as LanguageModel;
+    if (model.startsWith("gemini")) {
+      selectedModel = google(model) as LanguageModel;
     } else {
-      selectedModel = openai(selectedModelId) as LanguageModel;
+      selectedModel = openai(model) as LanguageModel;
     }
 
     const result = streamText({
