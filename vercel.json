@@ -1,6 +1,0 @@
-{
-  "buildCommand": "pnpm --filter=@assistant-ui/docs build",
-  "outputDirectory": "apps/docs/.next",
-  "installCommand": "pnpm install --frozen-lockfile",
-  "rootDirectory": "apps/docs"
-}
