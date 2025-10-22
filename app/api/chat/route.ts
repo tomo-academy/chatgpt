@@ -1,6 +1,6 @@
 import { openai } from "@ai-sdk/openai";
 import { google } from "@ai-sdk/google";
-import { convertToModelMessages, streamText } from "ai";
+import { streamText, LanguageModel } from "ai";
 import { frontendTools } from "@assistant-ui/react-ai-sdk";
 
 export const maxDuration = 30;
@@ -10,13 +10,17 @@ export async function POST(req: Request) {
     const { messages, tools, model = "gpt-4o-mini" } = await req.json();
 
     // Select the appropriate model based on the model parameter
-    const selectedModel = model.startsWith("gemini") 
-      ? google(model)
-      : openai(model);
+    let selectedModel: LanguageModel;
+    
+    if (model.startsWith("gemini")) {
+      selectedModel = google(model) as LanguageModel;
+    } else {
+      selectedModel = openai(model) as LanguageModel;
+    }
 
     const result = streamText({
-      model: selectedModel as any,
-      messages: convertToModelMessages(messages),
+      model: selectedModel,
+      messages,
       maxOutputTokens: 1200,
       tools: tools ? {
         ...frontendTools(tools),
