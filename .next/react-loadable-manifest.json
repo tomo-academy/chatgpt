@@ -1,13 +1,13 @@
 {
   "app\\page.tsx -> @/components/ChatApp": {
-    "id": 33184,
+    "id": 10592,
     "files": [
       "static/css/ffacb3b6719cc2cf.css",
       "static/chunks/ba12c10f-fcba22afb3998fbd.js",
       "static/chunks/0e5ce63c.d39273ff68d86c1e.js",
       "static/chunks/1580-57f4bb970f90a65e.js",
-      "static/chunks/4241.656ccddbe3fc1205.js",
-      "static/chunks/3184.3092de21a00d0576.js"
+      "static/chunks/8159.df0e2ae892342796.js",
+      "static/chunks/592.2dff5eae8eea8164.js"
     ]
   },
   "node_modules\\react-shiki\\dist\\index.js -> shiki/wasm": {
