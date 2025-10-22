@@ -11,6 +11,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import { ModelPicker } from "./ModelPicker";
 import { Thread } from "@/components/assistant-ui/thread";
 import { ThreadList } from "@/components/assistant-ui/thread-list";
+import { useChatContext } from "@/components/ChatProvider";
 
 type ButtonWithTooltipProps = ComponentPropsWithRef<typeof Button> & {
   tooltip: string;
@@ -71,10 +72,12 @@ const LeftBarSheet: FC = () => {
 };
 
 const Header: FC = () => {
+  const { setCurrentModel } = useChatContext();
+  
   return (
     <header className="flex gap-2">
       <LeftBarSheet />
-      <ModelPicker />
+      <ModelPicker onModelChange={setCurrentModel} />
       <ButtonWithTooltip
         variant="outline"
         size="icon"
