@@ -394,23 +394,6 @@ function Sidebar({
   }, [contextMenu.visible]);
 
   useEffect(() => {
-    const handleClickOutsideDropdown = (e) => {
-      if (
-        userContainerRef.current &&
-        !userContainerRef.current.contains(e.target)
-      ) {
-        setIsDropdown(false);
-      }
-    };
-    if (isDropdown) {
-      document.addEventListener("click", handleClickOutsideDropdown);
-    }
-    return () => {
-      document.removeEventListener("click", handleClickOutsideDropdown);
-    };
-  }, [isDropdown]);
-
-  useEffect(() => {
       setIsSearchVisible(false);
       setSearchQuery("");
   }, [isSidebarOpen]);
@@ -502,20 +485,16 @@ function Sidebar({
             <>
               <div className="conversation-header">
                 Chat History
-                <div className="realtime-indicator">
-                  <span 
-                    className={`realtime-dot ${isRealTimeEnabled ? 'active' : 'inactive'}`}
-                    title={isRealTimeEnabled ? 'Real-time updates enabled' : 'Real-time updates disabled'}
-                  ></span>
-                  {lastFetchTime && (
+                {lastFetchTime && (
+                  <div className="realtime-indicator">
                     <span className="last-update">
                       {new Date(lastFetchTime).toLocaleTimeString('en-US', { 
                         hour: '2-digit', 
                         minute: '2-digit' 
                       })}
                     </span>
-                  )}
-                </div>
+                  </div>
+                )}
               </div>
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
