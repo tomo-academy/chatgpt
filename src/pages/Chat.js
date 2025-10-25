@@ -6,7 +6,6 @@ import { SettingsContext } from "../contexts/SettingsContext";
 import { ConversationsContext } from "../contexts/ConversationsContext";
 import { motion, AnimatePresence } from "framer-motion";
 import { useFileUpload } from "../utils/useFileUpload";
-import { createAzureAIClient } from "../utils/azureAI";
 import Message from "../components/Message";
 import Modal from "../components/Modal";
 import Toast from "../components/Toast";
