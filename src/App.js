@@ -1,6 +1,6 @@
 // src/App.js
 import { useEffect, useState, useCallback, useRef, useContext, useMemo } from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate, useLocation } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import Sidebar from "./components/Sidebar";
 import Header from "./components/Header";
 import ImageHeader from "./components/ImageHeader";
@@ -11,8 +11,6 @@ import ImageHome from "./pages/ImageHome";
 import View from "./pages/View";
 import Realtime from "./pages/Realtime";
 import Admin from "./pages/Admin";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
 import Toast from "./components/Toast";
 import { SettingsProvider } from "./contexts/SettingsContext";
 import { SettingsContext } from "./contexts/SettingsContext";
@@ -31,8 +29,6 @@ function App() {
 }
 
 function AppContent() {
-  const [isLoggedIn, setIsLoggedIn] = useState(null);
-  const [userInfo, setUserInfo] = useState(null);
   const [isResponsive, setIsResponsive] = useState(window.innerWidth <= 768);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [userSidebarOpen, setUserSidebarOpen] = useState(null);
@@ -45,13 +41,11 @@ function AppContent() {
 
   const shouldShowLayout = useMemo(() => {
     return (
-      isLoggedIn && (
-        location.pathname === '/' ||
-        location.pathname.startsWith('/chat/') ||
-        location.pathname.startsWith('/image')
-      )
+      location.pathname === '/' ||
+      location.pathname.startsWith('/chat/') ||
+      location.pathname.startsWith('/image')
     );
-  }, [isLoggedIn, location.pathname]);
+  }, [location.pathname]);
 
   const shouldShowLogo = useMemo(() => {
     return location.pathname.startsWith("/view");
@@ -70,33 +64,9 @@ function AppContent() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  // Load conversations on app start
   useEffect(() => {
-    async function checkLoginStatus() {
-      try {
-        const statusRes = await fetch(`${process.env.REACT_APP_FASTAPI_URL}/auth/status`, { credentials: "include" });
-        if (!statusRes.ok) {
-          setIsLoggedIn(false);
-          setUserInfo(null);
-          return;
-        }
-        const statusData = await statusRes.json();
-        setIsLoggedIn(statusData.logged_in);
-        if (statusData.logged_in) {
-          fetchConversations();
-          try {
-            const userRes = await fetch(`${process.env.REACT_APP_FASTAPI_URL}/auth/user`, { credentials: "include" });
-            if (userRes.ok) {
-              const userData = await userRes.json();
-              setUserInfo(userData);
-            }
-          } catch (error) {}
-        }
-      } catch (error) {
-        setIsLoggedIn(false);
-        setUserInfo(null);
-      }
-    }
-    checkLoginStatus();
+    fetchConversations();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -183,8 +153,8 @@ function AppContent() {
     };
   }, [isTouch]);
 
-  if (isLoggedIn === null) return null;
-  if (isLoggedIn && !isModelReady) return null;
+  // App is always ready without login checks
+  if (!isModelReady) return null;
 
   return (
     <div style={{ display: "flex", margin: "0", overflow: "hidden" }}>
@@ -208,7 +178,7 @@ function AppContent() {
             isSidebarOpen={isSidebarOpen}
             isResponsive={isResponsive}
             isTouch={isTouch}
-            userInfo={userInfo}
+            userInfo={{}} // No user info needed
           />
         </div>
       )}
@@ -278,15 +248,13 @@ function AppContent() {
         )}
 
         <Routes location={location} key={location.pathname}>
-          <Route path="/" element={isLoggedIn ? <Home isTouch={isTouch} /> : <Navigate to="/login" />} />
-          <Route path="/chat/:conversation_id" element={isLoggedIn ? <Chat isTouch={isTouch} chatMessageRef={chatMessageRef} /> : <Navigate to="/login" />} />
-          <Route path="/image" element={isLoggedIn ? <ImageHome isTouch={isTouch} /> : <Navigate to="/login" />} />
-          <Route path="/image/:conversation_id" element={isLoggedIn ? <ImageChat isTouch={isTouch} chatMessageRef={chatMessageRef} /> : <Navigate to="/login" />} />
-          <Route path="/view/:type/:conversation_id" element={isLoggedIn ? <View /> : <Navigate to="/login" />} />
-          <Route path="/realtime" element={isLoggedIn ? <Realtime /> : <Navigate to="/login" />} />
-          <Route path="/admin" element={isLoggedIn ? <Admin /> : <Navigate to="/login" />} />
-          <Route path="/login" element={isLoggedIn ? <Navigate to="/" /> : <Login />} />
-          <Route path="/register" element={isLoggedIn ? <Navigate to="/" /> : <Register />} />
+          <Route path="/" element={<Home isTouch={isTouch} />} />
+          <Route path="/chat/:conversation_id" element={<Chat isTouch={isTouch} chatMessageRef={chatMessageRef} />} />
+          <Route path="/image" element={<ImageHome isTouch={isTouch} />} />
+          <Route path="/image/:conversation_id" element={<ImageChat isTouch={isTouch} chatMessageRef={chatMessageRef} />} />
+          <Route path="/view/:type/:conversation_id" element={<View />} />
+          <Route path="/realtime" element={<Realtime />} />
+          <Route path="/admin" element={<Admin />} />
         </Routes>
       </div>
 

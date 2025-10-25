@@ -4,7 +4,6 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { RiMenuLine } from "react-icons/ri";
 import { LuSearch, LuSquarePen, LuAudioLines, LuImage } from "react-icons/lu";
 import { IoMdStar } from "react-icons/io";
-import { FaUserCircle } from "react-icons/fa";
 import { ClipLoader } from "react-spinners";
 import { SettingsContext } from "../contexts/SettingsContext";
 import { ConversationsContext } from "../contexts/ConversationsContext";
@@ -130,11 +129,9 @@ function Sidebar({
   isSidebarOpen,
   isResponsive,
   isTouch,
-  userInfo,
 }) {
   const navigate = useNavigate();
   const location = useLocation();
-  const [isDropdown, setIsDropdown] = useState(false);
   const [modalMessage, setModalMessage] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [modalAction, setModalAction] = useState(null);
@@ -151,7 +148,6 @@ function Sidebar({
     x: 0,
     y: 0,
   });
-  const userContainerRef = useRef(null);
   const longPressTimer = useRef(null);
   const contextMenuProtected = useRef(false);
 
@@ -159,13 +155,11 @@ function Sidebar({
   const { 
     conversations, 
     isLoadingChat, 
-    isRealTimeEnabled,
     lastFetchTime,
     deleteConversation, 
     deleteAllConversation, 
     updateConversation, 
-    toggleStarConversation,
-    toggleRealTime
+    toggleStarConversation
   } = useContext(ConversationsContext);
 
   const sortedConversations = useMemo(() => {
@@ -211,9 +205,6 @@ function Sidebar({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ starred: !conversation.starred })
       });
-      if (res.status === 401 && !window.location.pathname.includes('/login') && !window.location.pathname.includes('/register')) {
-          window.location.href = '/login?expired=true';
-      }
       if (!res.ok) {
         throw new Error('즐겨찾기 토글이 실패했습니다.');
       }
@@ -298,9 +289,6 @@ function Sidebar({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ alias: newAlias })
       });
-      if (res.status === 401 && !window.location.pathname.includes('/login') && !window.location.pathname.includes('/register')) {
-        window.location.href = '/login?expired=true';
-      }
       if (!res.ok) {
         throw new Error('대화 이름 편집에 실패했습니다.');
       }
@@ -321,9 +309,6 @@ function Sidebar({
         method: 'DELETE',
         credentials: 'include'
       });
-      if (res.status === 401 && !window.location.pathname.includes('/login') && !window.location.pathname.includes('/register')) {
-        window.location.href = '/login?expired=true';
-      }
       if (!res.ok) {
         throw new Error('대화 삭제에 실패했습니다.');
       }
@@ -334,26 +319,9 @@ function Sidebar({
     }
   }, [deleteConversation, currentConversationId, navigate]);
 
-  const handleRefresh = useCallback(() => {
-    window.location.reload();
-  }, []);
-
-  const handleAdminClick = useCallback(() => {
-    navigate("/admin");
-    setIsDropdown(false);
-    if (isResponsive) toggleSidebar();
-  }, [navigate, isResponsive, toggleSidebar]);
-
   const handleDeleteAll = useCallback(() => {
-    setModalMessage("정말 모든 대화를 삭제하시겠습니까?");
+    setModalMessage("Delete all conversations?");
     setModalAction("deleteAll");
-    setShowModal(true);
-    setIsDropdown(false);
-  }, []);
-
-  const handleLogoutClick = useCallback(() => {
-    setModalMessage("정말 로그아웃 하시겠습니까?");
-    setModalAction("logout");
     setShowModal(true);
   }, []);
 
@@ -368,9 +336,6 @@ function Sidebar({
             method: 'DELETE',
             credentials: 'include'
           });
-          if (res.status === 401 && !window.location.pathname.includes('/login') && !window.location.pathname.includes('/register')) {
-            window.location.href = '/login?expired=true';
-          }
           if (!res.ok) {
             throw new Error('대화 삭제에 실패했습니다.');
           }
@@ -378,34 +343,6 @@ function Sidebar({
       } catch (error) {
         console.error("Failed to delete conversations.", error);
         setToastMessage("대화 삭제에 실패했습니다.");
-        setShowToast(true);
-      }
-    } else if (modalAction === "logout") {
-      try {
-        {
-          const res = await fetch(`${process.env.REACT_APP_FASTAPI_URL}/logout`, {
-            method: 'POST',
-            credentials: 'include',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({})
-          });
-          if (res.status === 401 && !window.location.pathname.includes('/login') && !window.location.pathname.includes('/register')) {
-            window.location.href = '/login?expired=true';
-          }
-          if (!res.ok) {
-            let detail = null;
-            try { detail = (await res.json())?.detail; } catch {}
-            throw new Error(detail || '알 수 없는 오류가 발생했습니다.');
-          }
-        }
-        window.location.href = '/login';
-      } catch (error) {
-        const detail = error.response?.data?.detail;
-        setToastMessage(
-          !Array.isArray(detail) && detail
-            ? detail
-            : "알 수 없는 오류가 발생했습니다."
-        );
         setShowToast(true);
       }
     }
@@ -621,58 +558,6 @@ function Sidebar({
               </motion.div>
             </>
           )}
-        </div>
-
-        <div className="user-container" ref={userContainerRef}>
-          <div className="user-info" onClick={() => setIsDropdown(!isDropdown)}>
-            <FaUserCircle className="user-icon" />
-            <div className="user-name">{userInfo?.name}</div>
-          </div>
-
-          <AnimatePresence>
-            {isDropdown && (
-              <motion.div
-                className="user-dropdown"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 10 }}
-                transition={{ duration: 0.3, ease: "easeOut" }}
-              >
-                <div onClick={handleRefresh} className="dropdown-item user-billing">
-                  <div className="billing-text">
-                    ${userInfo?.billing?.toFixed(2)} used
-                  </div>
-                  <div className="refresh-button">
-                    Refresh Page
-                  </div>
-                </div>
-                {userInfo?.admin && (
-                  <div
-                    onClick={handleAdminClick}
-                    className="dropdown-item"
-                  >
-                    User Management
-                  </div>
-                )}
-                <div 
-                  onClick={() => toggleRealTime(!isRealTimeEnabled)}
-                  className="dropdown-item"
-                >
-                  Real-time Updates {isRealTimeEnabled ? 'Off' : 'On'}
-                </div>
-                <div onClick={handleDeleteAll} className="dropdown-item">
-                  Delete All Chats
-                </div>
-                <div
-                  onClick={handleLogoutClick}
-                  className="dropdown-item"
-                  style={{ color: "red" }}
-                >
-                  Logout
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
         </div>
       </div>
 
