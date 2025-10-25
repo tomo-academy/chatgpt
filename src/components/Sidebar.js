@@ -501,6 +501,10 @@ function Sidebar({
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: 20 }}
                 transition={{ duration: 0.3 }}
+                onContextMenu={(e) => {
+                  e.preventDefault();
+                  handleConversationContextMenu(e, null);
+                }}
                 style={{ 
                   height: '100%', 
                   display: 'flex', 
@@ -563,7 +567,7 @@ function Sidebar({
             }}
           >
             <ul>
-              {selectedConversationId && (
+              {selectedConversationId ? (
                 <>
                   {conversations.find(c => c.conversation_id === selectedConversationId)?.starred ? (
                     <li onClick={() => handleCustomAction("star")}>Remove from Favorites</li>
@@ -573,6 +577,8 @@ function Sidebar({
                   <li onClick={() => handleCustomAction("rename")}>Rename</li>
                   <li onClick={() => handleCustomAction("delete")}>Delete</li>
                 </>
+              ) : (
+                <li onClick={handleDeleteAll}>Delete All Conversations</li>
               )}
             </ul>
           </motion.div>
