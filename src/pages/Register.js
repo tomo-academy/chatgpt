@@ -5,7 +5,6 @@ import { AnimatePresence, motion } from "framer-motion";
 import Modal from "../components/Modal";
 import Toast from "../components/Toast";
 import "../styles/Auth.css";
-import logo from "../logo.png";
 
 function Register() {
   const [name, setName] = useState("");

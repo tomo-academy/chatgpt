@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import Toast from "../components/Toast";
 import "../styles/Auth.css";
-import logo from "../logo.png";
 
 function Login() {
   const [email, setEmail] = useState("");

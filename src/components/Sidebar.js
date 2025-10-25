@@ -13,7 +13,6 @@ import Modal from "./Modal";
 import Tooltip from "./Tooltip";
 import Toast from "./Toast";
 import SearchModal from "./SearchModal";
-import logo from "../logo.png";
 import "../styles/Sidebar.css";
 
 const ConversationItem = React.memo(({

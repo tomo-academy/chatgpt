@@ -17,7 +17,6 @@ import Toast from "./components/Toast";
 import { SettingsProvider } from "./contexts/SettingsContext";
 import { SettingsContext } from "./contexts/SettingsContext";
 import { ConversationsProvider, ConversationsContext } from "./contexts/ConversationsContext";
-import logo from "./logo.png";
 
 function App() {
   return (
