@@ -1,12 +1,10 @@
 import React, { useState, useEffect, useCallback, useRef, useContext, useMemo } from "react";
-import { useNavigate, useParams, useLocation } from "react-router-dom";
-import { IoImageOutline, IoAttach } from "react-icons/io5";
-import { ClipLoader } from "react-spinners";
+import { useParams } from "react-router-dom";
 import { SettingsContext } from "../contexts/SettingsContext";
 import { ConversationsContext } from "../contexts/ConversationsContext";
 import { motion, AnimatePresence } from "framer-motion";
 import { useFileUpload } from "../utils/useFileUpload";
-import { createAzureAIClient } from "../utils/azureAI";
+import { sendMessageToAzure } from "../utils/chatHelpers";
 import Message from "../components/Message";
 import Modal from "../components/Modal";
 import Toast from "../components/Toast";
@@ -15,8 +13,6 @@ import "../styles/Common.css";
 
 function Chat({ isTouch, chatMessageRef }) {
   const { conversation_id } = useParams();
-  const location = useLocation();
-  const navigate = useNavigate();
 
   const [messages, setMessages] = useState([]);
   const [inputText, setInputText] = useState("");
@@ -38,100 +34,64 @@ function Chat({ isTouch, chatMessageRef }) {
     removeFile
   } = useFileUpload([]);
 
-  const abortControllerRef = useRef(null);
   const lastScrollTopRef = useRef(0);
-  const touchStartYRef = useRef(null);
   
   const {
-    models,
-    model,
     temperature,
-    reason,
-    verbosity,
     systemMessage,
-    isInference,
-    isSearch,
-    isDeepResearch,
-    isDAN,
-    mcpList,
-    canReadImage,
-    canControlTemp,
-    canControlReason,
-    canControlVerbosity,
-    canControlSystemMessage,
     azureApiKey,
-    useAzureAI,
-    updateModel,
-    setAlias,
-    setTemperature,
-    setReason,
-    setVerbosity,
-    setSystemMessage,
-    setIsDAN,
-    setHasImage,
-    setMCPList,
+    useAzureAI
   } = useContext(SettingsContext);
 
   const {
-    fetchConversations,
-    updateConversation
+    conversations,
+    updateConversation,
   } = useContext(ConversationsContext);
 
-  const uploadingFiles = uploadedFiles.some((file) => !file.content);
+  const generateMessageId = () => {
+    return Date.now().toString(36) + Math.random().toString(36).substr(2);
+  };
 
-  const generateMessageId = () => `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-
-  const updateAssistantMessage = useCallback((message, isComplete = false) => {
-    setIsThinking(prev => prev ? false : prev);
-    
-    setMessages((prev) => {
-      const lastMsg = prev[prev.length - 1];
-      if (lastMsg && lastMsg.role === "assistant") {
-        return prev.map((msg, i) =>
-          i === prev.length - 1 ? { ...msg, content: message, isComplete } : msg
-        );
+  // Load messages from localStorage on component mount
+  useEffect(() => {
+    if (conversation_id) {
+      const storedMessages = localStorage.getItem(`conversation_${conversation_id}`);
+      if (storedMessages) {
+        try {
+          const parsedMessages = JSON.parse(storedMessages);
+          setMessages(parsedMessages);
+        } catch (error) {
+          console.error('Error parsing stored messages:', error);
+          setMessages([]);
+        }
       } else {
-        const newMessage = { 
-          role: "assistant", 
-          content: message, 
-          isComplete,
-          id: generateMessageId()
-        };
-        return [...prev, newMessage];
+        setMessages([]);
       }
-    });
-  }, []);
+      setIsInitialized(true);
+    }
+  }, [conversation_id]);
 
-  const setErrorMessage = useCallback((message) => {
-    const errorMessage = { 
-      role: "error", 
-      content: message,
-      id: generateMessageId()
-    };
-    setMessages((prev) => [...prev, errorMessage]);
-  }, []);
+  // Save messages to localStorage whenever messages change
+  useEffect(() => {
+    if (isInitialized && conversation_id) {
+      localStorage.setItem(`conversation_${conversation_id}`, JSON.stringify(messages));
+    }
+  }, [messages, conversation_id, isInitialized]);
 
   const deleteMessages = useCallback(
-    async (startIndex) => {
-      setMessages((prevMessages) => prevMessages.slice(0, startIndex));
-
+    async (deleteIndex) => {
       try {
-        const res = await fetch(`${process.env.REACT_APP_FASTAPI_URL}/conversation/${conversation_id}/${startIndex}`, {
-          method: 'DELETE',
-          credentials: 'include'
-        });
-        if (res.status === 401) {
-          if (!window.location.pathname.includes('/login') && !window.location.pathname.includes('/register')) {
-            window.location.href = '/login?expired=true';
-          }
-        }
-        if (!res.ok) throw new Error('delete failed');
-      } catch (err) {
-        setToastMessage("메세지 삭제 중 오류가 발생했습니다.");
+        const newMessages = messages.slice(0, deleteIndex);
+        setMessages(newMessages);
+        setConfirmModal(false);
+        setdeleteIndex(null);
+      } catch (error) {
+        console.error("Error deleting messages:", error);
+        setToastMessage("Error deleting messages.");
         setShowToast(true);
       }
     },
-    [conversation_id]
+    [messages]
   );
 
   const sendMessage = useCallback(
@@ -149,15 +109,9 @@ function Chat({ isTouch, chatMessageRef }) {
         return;
       }
 
-      const contentParts = [];
-      contentParts.push({ type: "text", text: message });
-      if (files.length > 0) {
-        contentParts.push(...files);
-      }
-  
       const userMessage = { 
         role: "user", 
-        content: contentParts,
+        content: message,
         id: generateMessageId()
       };
       
@@ -165,617 +119,215 @@ function Chat({ isTouch, chatMessageRef }) {
       setInputText("");
       setUploadedFiles([]);
       setIsLoading(true);
+      setIsThinking(true);
+      
       setTimeout(() => {
         setScrollTrigger((v) => v + 1);
       }, 0);
 
-      const extractUrls = (message) => {
-        const validTlds = [
-          ".com", ".net", ".org", ".info", ".biz", ".xyz", ".tech", ".io", ".ai", ".gg", 
-          ".tv", ".me", ".app", ".dev", ".shop", ".store", ".co", ".kr", ".us", ".uk", 
-          ".eu", ".de", ".fr", ".jp", ".cn", ".au", ".ca", ".in", ".es", ".it", ".nl", 
-          ".se", ".no", ".fi", ".pl", ".ch", ".be", ".at"
-        ];
-        
-        const tldPattern = validTlds
-          .sort((a, b) => b.length - a.length)
-          .map(tld => tld.replace(/\./g, "\\."))
-          .join("|");
-        
-        const urlPattern = new RegExp(
-          `(?:https?:\\/\\/|http:\\/\\/|www\\.)?` +
-          `[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?` +
-          `(?:\\.[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?)*` +
-          `(?:${tldPattern})` +
-          `(?::\\d{1,5})?` +
-          `(?:\\/[A-Za-z0-9._~\\-/%+&=:;,@!?'*]*)?` +
-          `(?:\\?[A-Za-z0-9._~\\-/%&=+,:;@!?'*]*)?` +
-          `(?:#[A-Za-z0-9._~\\-/%&=+,:;@!?'*]*)?`,
-          "gi"
-        );
-        
-        const cleanUrl = (url) => {
-          if (!url) return url;
-          
-          const allowedEnd = /[A-Za-z0-9._~:%+&=;,@!?*#\-/]$/;
-          while (url && !allowedEnd.test(url)) {
-            if (url.length > 1 && url[url.length - 2] === '/') break;
-            url = url.slice(0, -1);
-          }
-          return url;
+      try {
+        // Call our Azure AI helper
+        const assistantContent = await sendMessageToAzure(messages, userMessage, {
+          azureApiKey,
+          systemMessage,
+          temperature
+        });
+
+        const assistantMessage = {
+          role: "assistant",
+          content: assistantContent,
+          id: generateMessageId()
         };
         
-        const matches = message.match(urlPattern) || [];
-        const urls = matches
-          .filter(match => !match.includes('@'))
-          .map(match => cleanUrl(match))
-          .filter(url => url && url.length > 3);
+        setMessages((prev) => [...prev, assistantMessage]);
         
-        return [...new Set(urls)];
-      };
+        // Update conversation alias with first message if it's "New Chat"
+        const currentConv = conversations.find(c => c.conversation_id === conversation_id);
+        if (currentConv && currentConv.alias === "New Chat") {
+          const newAlias = message.slice(0, 50) + (message.length > 50 ? "..." : "");
+          updateConversation(conversation_id, newAlias);
+        }
 
-      const detectedUrls = extractUrls(message);
-      
-      if (detectedUrls.length > 0) {
-        const previewPromises = detectedUrls.map(async (token) => {
-          let url = token;
-          if (!url.startsWith("http://") && !url.startsWith("https://")) {
-            url = "https://" + url;
-          }
-          try {
-            const res = await fetch(
-              `${process.env.REACT_APP_FASTAPI_URL}/visit_url`,
-              {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ url }),
-              }
-            );
-            
-            if (res.status === 401) {
-              if (!window.location.pathname.includes('/login') && !window.location.pathname.includes('/register')) {
-                window.location.href = '/login?expired=true';
-              }
-              return;
-            }
-            if (res.status === 413) {
-              setToastMessage("크기 제한을 초과하여 URL 인식에 실패했습니다.");
-              setShowToast(true);
-              return;
-            }
-            if (res.ok) {
-              const data = await res.json();
-              if (data.content) {
-                return { type: "url", content: data.content };
-              }
-            }
-          } catch (err) {}
-          return null;
-        });
+      } catch (error) {
+        console.error('Azure AI Error:', error);
+        setToastMessage("Failed to get response from Azure AI. Please check your API key and try again.");
+        setShowToast(true);
         
-        const urlPreviews = await Promise.all(previewPromises);
-        urlPreviews.forEach((preview) => {
-          if (preview !== null) {
-            contentParts.push(preview);
-          }
-        });
-      }
-  
-      const controller = new AbortController();
-      abortControllerRef.current = controller;
-  
-      try {
-        const selectedModel = models.find((m) => m.model_name === model);
-        if (!selectedModel) {
-          throw new Error("Selected model is not valid.");
-        }
-        if (isInference) {
-          setIsThinking(true);
-          setTimeout(() => {
-            setScrollTrigger((v) => v + 1);
-          }, 1100);
-        }
-  
-        const response = await fetch(
-          `${process.env.REACT_APP_FASTAPI_URL}${selectedModel.endpoint}`,
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              conversation_id,
-              model: selectedModel.model_name,
-              in_billing: selectedModel.in_billing,
-              out_billing: selectedModel.out_billing,
-              temperature: temperature,
-              reason: reason,
-              verbosity: verbosity,
-              system_message: systemMessage,
-              user_message: contentParts,
-              inference: isInference,
-              search: isSearch,
-              deep_research: isDeepResearch,
-              dan: isDAN,
-              mcp: mcpList,
-              stream: selectedModel.capabilities.stream,
-              control: {
-                temperature: canControlTemp,
-                reason: canControlReason,
-                verbosity: canControlVerbosity,
-                system_message: canControlSystemMessage,
-              },
-            }),
-            credentials: "include",
-            signal: controller.signal,
-          }
-        );
-        
-        if (response.status === 401) {
-          if (!window.location.pathname.includes('/login') && !window.location.pathname.includes('/register')) {
-            window.location.href = '/login?expired=true';
-          }
-          return;
-        }
-  
-        const reader = response.body.getReader();
-        const decoder = new TextDecoder("utf-8");
-        let partialData = "";
-        let assistantText = "";
-  
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-          const chunk = decoder.decode(value, { stream: true });
-          partialData += chunk;
-  
-          const lines = partialData.split("\n\n");
-          for (let i = 0; i < lines.length - 1; i++) {
-            const line = lines[i];
-            if (line.startsWith("data: ")) {
-              const jsonData = line.replace("data: ", "");
-              try {
-                const data = JSON.parse(jsonData);
-                if (data.error) {
-                  setErrorMessage(data.error);
-                  reader.cancel();
-                  return;
-                } else if (data.content) {
-                  assistantText += data.content;
-                  updateAssistantMessage(assistantText, false);
-                }
-              } catch (err) {
-                setErrorMessage("스트리밍 중 오류가 발생했습니다: " + err.message);
-                reader.cancel();
-                return;
-              }
-            }
-          }
-          partialData = lines[lines.length - 1];
-        }
-        updateAssistantMessage(assistantText, true);
-      } catch (err) {
-        if (err.name === "AbortError") return;
-        setErrorMessage("메시지 전송 중 오류가 발생했습니다: " + err.message);
+        const errorMessage = {
+          role: "assistant",
+          content: "I'm sorry, I encountered an error while processing your request. Please make sure your Azure AI configuration is correct and try again.",
+          id: generateMessageId()
+        };
+        setMessages((prev) => [...prev, errorMessage]);
       } finally {
-        setIsThinking(prev => prev ? false : prev);
         setIsLoading(false);
-        abortControllerRef.current = null;
+        setIsThinking(false);
+        setTimeout(() => {
+          setScrollTrigger((v) => v + 1);
+        }, 100);
       }
     },
     [
       conversation_id,
-      model,
-      models,
-      temperature,
-      reason,
-      verbosity,
-      systemMessage,
-      updateAssistantMessage,
-      setErrorMessage,
-      isInference,
-      isSearch,
-      isDeepResearch,
-      isDAN,
-      mcpList,
-      uploadedFiles,
-      setUploadedFiles,
       azureApiKey,
       useAzureAI,
-      canControlTemp,
-      canControlReason,
-      canControlVerbosity,
-      canControlSystemMessage
+      systemMessage,
+      temperature,
+      messages,
+      conversations,
+      updateConversation,
+      uploadedFiles,
+      setUploadedFiles
     ]
   );
 
-  const resendMesage = useCallback(
+  const resendMessage = useCallback(
     async (messageContent, deleteIndex = null) => {
       setIsLoading(true);
       try {
         if (deleteIndex !== null) {
           await deleteMessages(deleteIndex);
         }
-        
-        const textContent = messageContent.find(item => item.type === "text")?.text || "";
-        const nonTextContent = messageContent.filter(item => item.type !== "text");
-        
-        sendMessage(textContent, nonTextContent);
-      } catch (err) {
-        setToastMessage("메세지 처리 중 오류가 발생했습니다.");
+        await sendMessage(messageContent);
+      } catch (error) {
+        console.error("Error resending message:", error);
+        setToastMessage("Failed to resend message.");
         setShowToast(true);
+      } finally {
+        setIsLoading(false);
       }
     },
     [deleteMessages, sendMessage]
   );
 
-  const cancelRequest = useCallback(() => {
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
-      abortControllerRef.current = null;
-    }
-  }, []);
-
-  const sendEditedMessage = useCallback(
-    (idx, updatedContent) => {
-      resendMesage(updatedContent, idx);
-    },
-    [resendMesage]
-  );
-
-  const handleRegenerate = useCallback(
-    (startIndex) => {
-      const previousMessage = messages[startIndex - 1];
-      if (!previousMessage) return;
-      
-      resendMesage(previousMessage.content, startIndex - 1);
-    },
-    [messages, resendMesage]
-  );
-
-  const handleDelete = useCallback((idx) => {
-    setdeleteIndex(idx);
-    setConfirmModal(true);
-  }, []);
-
-  useEffect(() => {
-    const initializeChat = async () => {
+  const regenerateMessage = useCallback(
+    async (messageIndex) => {
       try {
-        if (location.state?.initialMessage && messages.length === 0) {
-          setIsInitialized(true);
-          const initialMessage = location.state.initialMessage;
-          const initialFiles = location.state.initialFiles;
-          
-          window.history.replaceState({}, '', location.pathname);
-
-          if (initialFiles && initialFiles.length > 0) {
-            sendMessage(initialMessage, initialFiles);
-          } else {
-            sendMessage(initialMessage);
-          }
-          
-          (async () => {
-            try {
-              const aliasResponse = await fetch(
-                `${process.env.REACT_APP_FASTAPI_URL}/chat/get_alias`,
-                {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({ 
-                    conversation_id: conversation_id,
-                    text: initialMessage
-                  }),
-                  credentials: "include"
-                }
-              );
-              
-              if (aliasResponse.status === 401) {
-                if (!window.location.pathname.includes('/login') && !window.location.pathname.includes('/register')) {
-                  window.location.href = '/login?expired=true';
-                }
-                return;
-              }
-              const aliasData = await aliasResponse.json();
-              if (aliasData && aliasData.alias) {
-                setAlias(aliasData.alias);
-                updateConversation(conversation_id, aliasData.alias, false);
-              }
-            } catch (err) {
-              updateConversation(conversation_id, "New Chat", false);
-            }
-          })();
+        const lastUserMessage = messages[messageIndex - 1];
+        if (lastUserMessage && lastUserMessage.role === "user") {
+          await resendMessage(lastUserMessage.content, messageIndex);
         }
-        
-        else {
-          const res = await fetch(`${process.env.REACT_APP_FASTAPI_URL}/chat/conversation/${conversation_id}`, {
-            credentials: 'include'
-          });
-          if (!res.ok) {
-            if (res.status === 404) {
-              fetchConversations();
-              navigate("/", { state: { errorModal: "Conversation not found." } });
-            } else {
-              fetchConversations();
-              navigate("/", { state: { errorModal: "Error occurred while loading conversation." } });
-            }
-            return;
-          }
-          const data = await res.json();
-          
-          updateModel(data.model, {
-            isInference: data.inference,
-            isSearch: data.search,
-            isDeepResearch: data.deep_research
-          });
-
-          setAlias(data.alias);
-          setTemperature(data.temperature);
-          setReason(data.reason);
-          setVerbosity(data.verbosity);
-          setSystemMessage(data.system_message);
-          setIsDAN(data.dan);
-          setMCPList(data.mcp);
-
-          const initialMessages = data.messages.map((m) => {
-            const messageWithId = m.id ? m : { ...m, id: generateMessageId() };
-            return m.role === "assistant" ? { ...messageWithId, isComplete: true } : messageWithId;
-          });
-          
-          setMessages(initialMessages);
-          setIsInitialized(true);
-        }
-      } catch (err) {
-        if (err.response && err.response.status === 404) {
-          fetchConversations();
-          navigate("/", { state: { errorModal: "대화를 찾을 수 없습니다." } });
-        } else {
-          fetchConversations();
-          navigate("/", { state: { errorModal: "대화를 불러오는 중 오류가 발생했습니다." } });
-        }
-      } finally {
-        if (!isInitialized) setIsInitialized(true);
-      }
-    };
-
-    initializeChat();
-    // eslint-disable-next-line
-  }, [conversation_id, location.state]);
-
-  useEffect(() => {
-    const hasImageHistory = messages.slice(-6).some((msg) => 
-      Array.isArray(msg.content) && msg.content.some((item) => item.type === "image")
-    );
-
-    const hasUploadedImage = uploadedFiles.some((file) => {
-      return (file.type && (file.type === "image" || file.type.startsWith("image/"))) || 
-        /\.(jpe?g|png|gif|bmp|webp)$/i.test(file.name);
-    });
-  
-    setHasImage(hasImageHistory || hasUploadedImage);
-  }, [messages, setHasImage, uploadedFiles]);
-
-  useEffect(() => {
-    if (isInitialized) {
-      chatMessageRef.current.scrollTop = chatMessageRef.current.scrollHeight;
-    }
-  }, [chatMessageRef, isInitialized]);
-  
-  useEffect(() => {
-    if (scrollTrigger !== 0) {
-      chatMessageRef.current.scrollTo({ top: chatMessageRef.current.scrollHeight, behavior: "smooth" });
-    }
-  }, [chatMessageRef, scrollTrigger]);
-
-  useEffect(() => {
-    if (isLoading && !userFixedScroll) { // Only During Streaming
-      chatMessageRef.current.scrollTo({ top: chatMessageRef.current.scrollHeight, behavior: "auto" });
-    }
-  }, [chatMessageRef, messages, isLoading, userFixedScroll]);
-
-  // userFixedScroll Logic
-  useEffect(() => {
-    const el = chatMessageRef.current;
-    lastScrollTopRef.current = el.scrollTop;
-
-    const handleWheel = (e) => {
-      if (!isLoading) return;
-      if (e.deltaY < 0) {
-        setUserFixedScroll(true);
-      } else if (e.deltaY > 0) {
-        const distanceFromBottom = el.scrollHeight - el.scrollTop - el.clientHeight;
-        if (distanceFromBottom <= 100) {
-          setUserFixedScroll(false);
-        }
-      }
-    };
-
-    const handleTouchStart = (e) => {
-      if (!isLoading) return;
-      if (e.touches && e.touches.length) {
-        touchStartYRef.current = e.touches[0].clientY;
-      }
-    };
-
-    const handleTouchMove = (e) => {
-      if (!isLoading) return;
-      if (!e.touches || !e.touches.length) return;
-      const currentY = e.touches[0].clientY;
-      const startY = touchStartYRef.current;
-      if (startY == null) return;
-      if (currentY > startY + 5) {
-        setUserFixedScroll(true);
-      } else if (currentY < startY - 5) {
-        const distanceFromBottom = el.scrollHeight - el.scrollTop - el.clientHeight;
-        if (distanceFromBottom <= 100) {
-          setUserFixedScroll(false);
-        }
-      }
-    };
-
-    const handleScroll = () => {
-      if (!isLoading) return;
-      lastScrollTopRef.current = el.scrollTop;
-    };
-
-    el.addEventListener("wheel", handleWheel, { passive: true });
-    el.addEventListener("scroll", handleScroll, { passive: true });
-    el.addEventListener("touchstart", handleTouchStart, { passive: true });
-    el.addEventListener("touchmove", handleTouchMove, { passive: true });
-
-    return () => {
-      el.removeEventListener("wheel", handleWheel);
-      el.removeEventListener("scroll", handleScroll);
-      el.removeEventListener("touchstart", handleTouchStart);
-      el.removeEventListener("touchmove", handleTouchMove);
-    };
-  }, [chatMessageRef, isLoading]);
-
-  useEffect(() => {
-    if (!isLoading) {
-      setUserFixedScroll(false);
-    }
-  }, [isLoading]);
-
-  const handleDragOver = useCallback((e) => {
-    e.preventDefault();
-    setIsDragActive(true);
-  }, []);
-
-  const handleDragLeave = useCallback((e) => {
-    e.preventDefault();
-    setIsDragActive(false);
-  }, []);
-
-  const handleDrop = useCallback(
-    async (e) => {
-      e.preventDefault();
-      setIsDragActive(false);
-      const files = Array.from(e.dataTransfer.files);
-      await processFiles(files, (errorMessage) => {
-        setToastMessage(errorMessage);
+      } catch (error) {
+        console.error("Error regenerating message:", error);
+        setToastMessage("Failed to regenerate message.");
         setShowToast(true);
-      }, canReadImage);
+      }
     },
-    [processFiles, canReadImage]
+    [messages, resendMessage]
   );
+
+  const handleFileUpload = useCallback(
+    async (acceptedFiles) => {
+      try {
+        const processedFiles = await processFiles(acceptedFiles);
+        setUploadedFiles((prev) => [...prev, ...processedFiles]);
+      } catch (error) {
+        console.error("File upload error:", error);
+        setToastMessage("Error uploading files.");
+        setShowToast(true);
+      }
+    },
+    [processFiles, setUploadedFiles]
+  );
+
+  const memoizedMessages = useMemo(() => {
+    return messages.map((message, index) => (
+      <Message
+        key={message.id || index}
+        message={message}
+        index={index}
+        lastMessage={index === messages.length - 1}
+        resendMessage={resendMessage}
+        regenerateMessage={regenerateMessage}
+        setdeleteIndex={setdeleteIndex}
+        setConfirmModal={setConfirmModal}
+        isTouch={isTouch}
+      />
+    ));
+  }, [messages, resendMessage, regenerateMessage, isTouch]);
+
+  // Auto-scroll effect
+  useEffect(() => {
+    if (chatMessageRef.current && !userFixedScroll) {
+      const scrollElement = chatMessageRef.current;
+      scrollElement.scrollTo({
+        top: scrollElement.scrollHeight,
+        behavior: "smooth",
+      });
+    }
+  }, [scrollTrigger, chatMessageRef, userFixedScroll]);
+
+  // Handle scroll to detect user manual scrolling
+  const handleScroll = useCallback(() => {
+    if (chatMessageRef.current) {
+      const scrollElement = chatMessageRef.current;
+      const currentScrollTop = scrollElement.scrollTop;
+      const scrollHeight = scrollElement.scrollHeight;
+      const clientHeight = scrollElement.clientHeight;
+      
+      const isAtBottom = currentScrollTop + clientHeight >= scrollHeight - 10;
+      setUserFixedScroll(!isAtBottom);
+      
+      lastScrollTopRef.current = currentScrollTop;
+    }
+  }, [chatMessageRef]);
 
   return (
-    <div
-      className="container"
-      onDragOver={handleDragOver}
-      onDragLeave={handleDragLeave}
-      onDrop={handleDrop}
-    >
-      {!isInitialized && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.2 }}
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            height: "100dvh",
-            marginBottom: "30px",
-          }}
-        >
-          <ClipLoader loading={true} size={50} />
-        </motion.div>
-      )}
-      
-      <div className="chat-messages" ref={chatMessageRef} style={{ scrollbarGutter: "stable" }}>
-        {useMemo(() => 
-          messages.map((msg, idx) => (
-            <Message
-              key={msg.id}
-              messageIndex={idx}
-              role={msg.role}
-              content={msg.content}
-              isComplete={msg.isComplete}
-              onDelete={handleDelete}
-              onRegenerate={handleRegenerate}
-              onSendEditedMessage={sendEditedMessage}
-              setScrollTrigger={setScrollTrigger}
-              isTouch={isTouch}
-              isLoading={isLoading}
-              isLastMessage={idx === messages.length - 1}
-              shouldRender={idx >= messages.length - 6}
-            />
-          )), [messages, handleDelete, handleRegenerate, sendEditedMessage, isTouch, isLoading]
-        )}
-
+    <div className="chat-container">
+      <div 
+        className="chat-messages"
+        ref={chatMessageRef}
+        onScroll={handleScroll}
+      >
         <AnimatePresence>
-          {confirmModal && (
-            <Modal
-              message="정말 메세지를 삭제하시겠습니까?"
-              onConfirm={() => {
-                deleteMessages(deleteIndex);
-                setdeleteIndex(null);
-                setConfirmModal(false);
-              }}
-              onCancel={() => {
-                setdeleteIndex(null);
-                setConfirmModal(false);
-              }}
-            />
-          )}
+          {memoizedMessages}
         </AnimatePresence>
-
+        
         {isThinking && (
           <motion.div
-            className="chat-message loading"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5, delay: 1, ease: "easeOut" }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="thinking-indicator"
           >
-            생각하는 중...
+            <div className="thinking-dots">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
           </motion.div>
         )}
       </div>
 
-      <InputContainer
-        isTouch={isTouch}
-        placeholder="Type your message..."
-        inputText={inputText}
-        setInputText={setInputText}
-        isLoading={isLoading}
-        onSend={sendMessage}
-        onCancel={cancelRequest}
-        uploadedFiles={uploadedFiles}
-        processFiles={processFiles}
-        removeFile={removeFile}
-        uploadingFiles={uploadingFiles}
-      />
+      <div className="chat-input-container">
+        <InputContainer
+          inputText={inputText}
+          setInputText={setInputText}
+          sendMessage={sendMessage}
+          isLoading={isLoading}
+          uploadedFiles={uploadedFiles}
+          removeFile={removeFile}
+          handleFileUpload={handleFileUpload}
+          isDragActive={isDragActive}
+          setIsDragActive={setIsDragActive}
+          placeholder="Type your message..."
+        />
+      </div>
 
-      <AnimatePresence>
-        {isDragActive && (
-          <motion.div
-            key="drag-overlay"
-            className="drag-overlay"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.1 }}
-          >
-            <div className="drag-container">
-              {canReadImage ? (
-                <>
-                  <IoImageOutline style={{ fontSize: "40px" }} />
-                  <div className="drag-text">여기에 파일 또는 이미지를 추가하세요</div>
-                </>
-              ) : (
-                <>
-                  <IoAttach style={{ fontSize: "40px" }} />
-                  <div className="drag-text">여기에 파일을 추가하세요</div>
-                </>
-              )}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-      
+      <Modal show={confirmModal} onClose={() => setConfirmModal(false)}>
+        <div className="confirm-modal">
+          <h3>Delete Messages</h3>
+          <p>Are you sure you want to delete this message and all messages after it?</p>
+          <div className="modal-buttons">
+            <button onClick={() => setConfirmModal(false)}>Cancel</button>
+            <button onClick={() => deleteMessages(deleteIndex)}>Delete</button>
+          </div>
+        </div>
+      </Modal>
+
       <Toast
-        type="error"
+        show={showToast}
         message={toastMessage}
-        isVisible={showToast}
         onClose={() => setShowToast(false)}
       />
     </div>
