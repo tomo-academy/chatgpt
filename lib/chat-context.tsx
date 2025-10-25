@@ -20,11 +20,17 @@ interface ChatContextType {
   updateChatTitle: (chatId: string, title: string) => void;
   
   // Settings
-  userSettings: any;
-  updateSettings: (settings: any) => void;
+  userSettings: UserSettings;
+  updateSettings: (settings: Partial<UserSettings>) => void;
   
   // Refresh chats list
   refreshChats: () => void;
+}
+
+interface UserSettings {
+  theme: string;
+  defaultModel: string;
+  autoSave: boolean;
 }
 
 const ChatContext = createContext<ChatContextType | undefined>(undefined);

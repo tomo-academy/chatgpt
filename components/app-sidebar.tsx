@@ -2,8 +2,6 @@
 
 import React from "react"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
-import { useState } from "react"
 import { PlusIcon, TrashIcon, SettingsIcon } from "lucide-react"
 import { SidebarHistory } from "@/components/sidebar-history"
 import { Button } from "@/components/ui/button"
@@ -18,15 +16,19 @@ import {
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip"
 import { useChatContext } from "@/lib/chat-context"
 
+interface User {
+  id?: string;
+  email?: string;
+  name?: string;
+}
+
 interface AppSidebarProps {
-  user?: any
+  user?: User
 }
 
 export function AppSidebar({ user }: AppSidebarProps) {
-  const router = useRouter()
   const { setOpenMobile } = useSidebar()
   const { createNewChat, deleteAllChats } = useChatContext()
-  const [showDeleteAllDialog, setShowDeleteAllDialog] = useState(false)
 
   const handleNewChat = () => {
     createNewChat()
@@ -35,7 +37,6 @@ export function AppSidebar({ user }: AppSidebarProps) {
 
   const handleDeleteAll = () => {
     deleteAllChats()
-    setShowDeleteAllDialog(false)
   }
 
   return (
@@ -103,7 +104,7 @@ export function AppSidebar({ user }: AppSidebarProps) {
                 <TooltipTrigger asChild>
                   <Button
                     className="h-8 w-8 rounded-lg bg-transparent p-0 text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-300"
-                    onClick={() => setShowDeleteAllDialog(true)}
+                    onClick={handleDeleteAll}
                     type="button"
                     variant="ghost"
                   >

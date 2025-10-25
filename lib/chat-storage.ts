@@ -44,11 +44,11 @@ class ChatStorageService {
       if (!chatsData) return [];
       
       const chats = JSON.parse(chatsData);
-      return chats.map((chat: any) => ({
+      return chats.map((chat: Chat) => ({
         ...chat,
         createdAt: new Date(chat.createdAt),
         updatedAt: new Date(chat.updatedAt),
-        messages: chat.messages.map((msg: any) => ({
+        messages: chat.messages.map((msg: ChatMessage) => ({
           ...msg,
           timestamp: new Date(msg.timestamp)
         }))
@@ -182,7 +182,7 @@ class ChatStorageService {
   }
 
   // Get user settings
-  getUserSettings() {
+  getUserSettings(): UserSettings {
     try {
       const settings = localStorage.getItem(STORAGE_KEYS.USER_SETTINGS);
       return settings ? JSON.parse(settings) : {
@@ -201,13 +201,19 @@ class ChatStorageService {
   }
 
   // Save user settings
-  saveUserSettings(settings: any): void {
+  saveUserSettings(settings: UserSettings): void {
     try {
       localStorage.setItem(STORAGE_KEYS.USER_SETTINGS, JSON.stringify(settings));
     } catch (error) {
       console.error('Error saving settings:', error);
     }
   }
+}
+
+interface UserSettings {
+  theme: string;
+  defaultModel: string;
+  autoSave: boolean;
 }
 
 export const chatStorage = ChatStorageService.getInstance();

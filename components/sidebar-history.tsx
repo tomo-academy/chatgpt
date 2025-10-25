@@ -2,10 +2,7 @@
 
 import React from "react"
 import { isToday, isYesterday, subMonths, subWeeks } from "date-fns"
-import { motion } from "framer-motion"
 import { useParams, useRouter } from "next/navigation"
-import { useState } from "react"
-import { Loader } from "lucide-react"
 import {
   SidebarGroup,
   SidebarGroupContent,
@@ -18,8 +15,15 @@ type Chat = {
   title: string
   createdAt: string | Date
   userId?: string
-  messages?: any[]
+  messages?: ChatMessage[]
   updatedAt?: string | Date
+}
+
+interface ChatMessage {
+  id: string;
+  role: 'user' | 'assistant';
+  content: string;
+  timestamp: Date;
 }
 
 type GroupedChats = {
@@ -64,15 +68,21 @@ const groupChatsByDate = (chats: Chat[]): GroupedChats => {
 }
 
 interface SidebarHistoryProps {
-  user?: any
+  user?: User
+}
+
+interface User {
+  id?: string;
+  email?: string;
+  name?: string;
 }
 
 export function SidebarHistory({ user }: SidebarHistoryProps) {
   const router = useRouter()
   const { id } = useParams()
-  const { chats, isLoading, loadChat } = useChatContext()
+  const { chats, isLoading } = useChatContext()
 
-  const groupedChats = groupChatsByDate(chats.map(chat => ({
+  const groupedChats = groupChatsByDate(chats.map((chat: Chat) => ({
     id: chat.id,
     title: chat.title,
     createdAt: chat.createdAt,
