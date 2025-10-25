@@ -182,7 +182,7 @@ function Sidebar({
       (c) => c.conversation_id === conversation_id
     );
     if (!conv) {
-      setToastMessage("대화가 존재하지 않습니다.");
+      setToastMessage("Conversation does not exist.");
       setShowToast(true);
       return;
     }
@@ -290,11 +290,11 @@ function Sidebar({
         body: JSON.stringify({ alias: newAlias })
       });
       if (!res.ok) {
-        throw new Error('대화 이름 편집에 실패했습니다.');
+        throw new Error('Failed to edit conversation name.');
       }
     } catch (error) {
       console.error("Failed to rename conversation.", error);
-      setToastMessage("대화 이름 편집에 실패했습니다.");
+      setToastMessage("Failed to edit conversation name.");
       setShowToast(true);
     }
   }, [updateConversation, currentConversationId, setAlias]);
@@ -310,11 +310,11 @@ function Sidebar({
         credentials: 'include'
       });
       if (!res.ok) {
-        throw new Error('대화 삭제에 실패했습니다.');
+        throw new Error('Failed to delete conversation.');
       }
     } catch (error) {
       console.error("Failed to delete conversation.", error);
-      setToastMessage("대화 삭제에 실패했습니다.");
+      setToastMessage("Failed to delete conversation.");
       setShowToast(true);
     }
   }, [deleteConversation, currentConversationId, navigate]);
@@ -337,12 +337,12 @@ function Sidebar({
             credentials: 'include'
           });
           if (!res.ok) {
-            throw new Error('대화 삭제에 실패했습니다.');
+            throw new Error('Failed to delete conversation.');
           }
         }
       } catch (error) {
         console.error("Failed to delete conversations.", error);
-        setToastMessage("대화 삭제에 실패했습니다.");
+        setToastMessage("Failed to delete conversation.");
         setShowToast(true);
       }
     }

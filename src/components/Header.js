@@ -57,7 +57,7 @@ function Header({ toggleSidebar, isSidebarOpen, isTouch, chatMessageRef }) {
     return true;
   });
 
-  const currentModelAlias = models.find((m) => m.model_name === model)?.model_alias || "모델 선택";
+  const currentModelAlias = models.find((m) => m.model_name === model)?.model_alias || "Select Model";
 
   const toPercent = (value, max = 1) => {
     const pct = Math.round((value / max) * 100);
@@ -216,7 +216,7 @@ function Header({ toggleSidebar, isSidebarOpen, isTouch, chatMessageRef }) {
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.8 }}
             >
-              <Tooltip content="파라미터 설정" position="left" isTouch={isTouch}>
+              <Tooltip content="Parameter Settings" position="left" isTouch={isTouch}>
                 <div className="header-icon slider-icon">
                   <RiLightbulbLine
                     onClick={() => {
@@ -310,7 +310,7 @@ function Header({ toggleSidebar, isSidebarOpen, isTouch, chatMessageRef }) {
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.8 }}
             >
-              <Tooltip content="지시어 설정" position="left" isTouch={isTouch}>
+              <Tooltip content="Instruction Settings" position="left" isTouch={isTouch}>
                 <div className="header-icon system-message-icon">
                   <RiEdit2Line
                     onClick={() => {
@@ -333,7 +333,7 @@ function Header({ toggleSidebar, isSidebarOpen, isTouch, chatMessageRef }) {
                     transition={{ duration: 0.2 }}
                   >
                     <div className="system-message-label">
-                      <span>시스템 지시어 설정</span>
+                      <span>System Instruction Settings</span>
                     </div>
                     <textarea
                       value={systemMessage}

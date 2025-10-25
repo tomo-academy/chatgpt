@@ -39,31 +39,37 @@ export const SettingsProvider = ({ children }) => {
 
   const fetchModels = async () => {
     try {
-      const [modelsRes, imageModelsRes, realtimeModelsRes] = await Promise.all([
-        fetch(`${process.env.REACT_APP_FASTAPI_URL}/chat_models`, { credentials: "include" }),
-        fetch(`${process.env.REACT_APP_FASTAPI_URL}/image_models`, { credentials: "include" }),
-        fetch(`${process.env.REACT_APP_FASTAPI_URL}/realtime_models`, { credentials: "include" })
-      ]);
-      if (!modelsRes.ok || !imageModelsRes.ok || !realtimeModelsRes.ok) {
-        setModels([]);
-        setImageModels([]);
-        setRealtimeModels([]);
-        return;
-      }
+      // Use static Azure AI models since we're working directly with Azure
+      const azureModels = [
+        {
+          model_name: "gpt-4o-mini",
+          model_alias: "GPT-4o Mini (Azure)",
+          capabilities: {
+            image: true,
+            inference: false,
+            search: false,
+            deep_research: false,
+            mcp: false
+          },
+          controls: {
+            temperature: true,
+            reason: false,
+            verbosity: false,
+            system_message: true
+          }
+        }
+      ];
 
-      const modelsData = await modelsRes.json();
-      const imageModelsData = await imageModelsRes.json();
-      const realtimeModelsData = await realtimeModelsRes.json();
+      setModels(azureModels);
+      setImageModels(azureModels);
+      setRealtimeModels([]);
 
-      setModels(modelsData?.models);
-      setImageModels(imageModelsData?.models);
-      setRealtimeModels(realtimeModelsData?.models);
-
-      updateModel(modelsData.default, null, modelsData.models);
-      updateImageModel(imageModelsData.default, imageModelsData.models);
-      updateRealtimeModel(realtimeModelsData.default, realtimeModelsData.models);
+      updateModel("gpt-4o-mini", null, azureModels);
+      updateImageModel("gpt-4o-mini", azureModels);
+      updateRealtimeModel(null, []);
 
     } catch (error) {
+      console.error('Failed to set up Azure models:', error);
       setModels([]);
       setImageModels([]);
       setRealtimeModels([]);
