@@ -8,8 +8,7 @@ export class AzureAIClient {
   async sendMessage(messages, options = {}) {
     const {
       temperature = 0.7,
-      maxTokens = 1000,
-      model = "gpt-4o-mini"
+      maxTokens = 1000
     } = options;
 
     try {
@@ -42,8 +41,7 @@ export class AzureAIClient {
   async sendMessageStream(messages, options = {}, onChunk) {
     const {
       temperature = 0.7,
-      maxTokens = 1000,
-      model = "gpt-4o-mini"
+      maxTokens = 1000
     } = options;
 
     try {
