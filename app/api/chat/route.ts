@@ -1,34 +1,26 @@
 import { openai } from "@ai-sdk/openai";
 import { google } from "@ai-sdk/google";
-import { convertToModelMessages, streamText } from "ai";
-import { frontendTools } from "@assistant-ui/react-ai-sdk";
+import { streamText } from "ai";
 
 export const maxDuration = 30;
 
-function getModelProvider(modelId: string) {
-  if (modelId.startsWith("gemini")) {
-    return google(modelId);
-  }
-  return openai(modelId);
-}
-
 export async function POST(req: Request) {
   try {
-    const { messages, tools, selectedModel = "gpt-4o-mini" } = await req.json();
+    const { messages, model: selectedModel = "gpt-4o-mini" } = await req.json();
 
-    const model = getModelProvider(selectedModel);
+    let model;
+    if (selectedModel.startsWith("gemini")) {
+      model = google(selectedModel);
+    } else {
+      model = openai(selectedModel);
+    }
 
-    const result = streamText({
-      model,
-      messages: convertToModelMessages(messages),
-      maxOutputTokens: 1200,
-      tools: tools ? {
-        ...frontendTools(tools),
-      } : undefined,
-      onError: console.error,
+    const result = await streamText({
+      model: model as unknown as any, // Type workaround for AI SDK compatibility
+      messages,
     });
 
-    return result.toUIMessageStreamResponse();
+    return result.toDataStreamResponse();
   } catch (error) {
     console.error("Error:", error);
     return new Response("Internal server error", { status: 500 });
