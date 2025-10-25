@@ -12,23 +12,30 @@ export function ConversationsProvider({ children }) {
   const intervalRef = useRef(null);
   const isOnlineRef = useRef(navigator.onLine);
 
+  // Helper function to save conversations to localStorage
+  const saveConversationsToStorage = useCallback((conversationsToSave) => {
+    try {
+      localStorage.setItem('nexa_conversations', JSON.stringify(conversationsToSave));
+    } catch (error) {
+      console.error('Failed to save conversations to localStorage:', error);
+    }
+  }, []);
+
   const fetchConversations = useCallback(async (isRealTimeUpdate = false) => {
     if (!isRealTimeUpdate) {
       setIsLoadingChat(true);
     }
     try {
-      const res = await fetch(`${process.env.REACT_APP_FASTAPI_URL}/conversations`, {
-        credentials: "include"
-      });
-      if (!res.ok) {
-        throw new Error('대화를 불러오는 데 실패했습니다.');
-      }
-      const data = await res.json();
-      setConversations(data.conversations);
+      // Load conversations from localStorage
+      const storedConversations = localStorage.getItem('nexa_conversations');
+      const conversations = storedConversations ? JSON.parse(storedConversations) : [];
+      setConversations(conversations);
       setLastFetchTime(Date.now());
       setError(null);
     } catch (error) {
-      setError(error.message || "대화를 불러오는 데 실패했습니다.");
+      console.error('Failed to load conversations:', error);
+      setError("Failed to load conversations from local storage.");
+      setConversations([]);
     } finally {
       if (!isRealTimeUpdate) {
         setIsLoadingChat(false);
@@ -95,7 +102,7 @@ export function ConversationsProvider({ children }) {
     };
   }, [fetchConversations, startRealTimeUpdates, stopRealTimeUpdates, isRealTimeEnabled]);
 
-  const addConversation = (newConversation) => {
+  const addConversation = useCallback((newConversation) => {
     setConversations((prevConversations) => {
       // Check if conversation already exists to avoid duplicates
       const exists = prevConversations.some(
@@ -103,25 +110,30 @@ export function ConversationsProvider({ children }) {
       );
       if (exists) return prevConversations;
       
-      return [newConversation, ...prevConversations];
+      const updatedConversations = [newConversation, ...prevConversations];
+      saveConversationsToStorage(updatedConversations);
+      return updatedConversations;
     });
-  };
+  }, [saveConversationsToStorage]);
 
-  const deleteConversation = (conversation_id) => {
-    setConversations((prevConversations) =>
-      prevConversations.filter(
+  const deleteConversation = useCallback((conversation_id) => {
+    setConversations((prevConversations) => {
+      const updatedConversations = prevConversations.filter(
         (conv) => conv.conversation_id !== conversation_id
-      )
-    );
-  };
+      );
+      saveConversationsToStorage(updatedConversations);
+      return updatedConversations;
+    });
+  }, [saveConversationsToStorage]);
 
-  const deleteAllConversation = () => {
+  const deleteAllConversation = useCallback(() => {
     setConversations([]);
-  };
+    saveConversationsToStorage([]);
+  }, [saveConversationsToStorage]);
 
-  const updateConversation = (conversation_id, newAlias, isLoading = undefined) => {
-    setConversations((prevConversations) =>
-      prevConversations.map((conv) =>
+  const updateConversation = useCallback((conversation_id, newAlias, isLoading = undefined) => {
+    setConversations((prevConversations) => {
+      const updatedConversations = prevConversations.map((conv) =>
         conv.conversation_id === conversation_id
           ? { 
               ...conv, 
@@ -129,19 +141,23 @@ export function ConversationsProvider({ children }) {
               ...(isLoading !== undefined && { isLoading })
             }
           : conv
-      )
-    );
-  };
+      );
+      saveConversationsToStorage(updatedConversations);
+      return updatedConversations;
+    });
+  }, [saveConversationsToStorage]);
 
-  const toggleStarConversation = (conversation_id, starred) => {
-    setConversations(prevConversations => 
-      prevConversations.map(conv => 
+  const toggleStarConversation = useCallback((conversation_id, starred) => {
+    setConversations(prevConversations => {
+      const updatedConversations = prevConversations.map(conv => 
         conv.conversation_id === conversation_id 
           ? { ...conv, starred, starred_at: starred ? new Date().toISOString() : null }
           : conv
-      )
-    );
-  };
+      );
+      saveConversationsToStorage(updatedConversations);
+      return updatedConversations;
+    });
+  }, [saveConversationsToStorage]);
 
   const toggleRealTime = (enabled) => {
     setIsRealTimeEnabled(enabled);

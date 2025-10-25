@@ -5,6 +5,7 @@ import { SettingsContext } from "../contexts/SettingsContext";
 import { ConversationsContext } from "../contexts/ConversationsContext";
 import { motion, AnimatePresence } from "framer-motion";
 import { useFileUpload } from "../utils/useFileUpload";
+import { createAzureAIClient } from "../utils/azureAI";
 import Modal from "../components/Modal";
 import Toast from "../components/Toast";
 import InputContainer from "../components/InputContainer";
@@ -31,12 +32,12 @@ function Home({ isTouch }) {
   } = useFileUpload([]);
 
   const {
-    models,
-    model,
     isInference,
     isSearch,
     isDeepResearch,
     canReadImage,
+    azureApiKey,
+    useAzureAI,
     setTemperature,
     setReason,
     setVerbosity,
@@ -97,41 +98,37 @@ function Home({ isTouch }) {
 
   const sendMessage = useCallback(
     async (message) => {
-      if (!message.trim() || uploadingFiles) return;
+      if (!message.trim()) return;
+      
+      // Check if Azure AI is configured
+      if (!useAzureAI || !azureApiKey) {
+        setToastMessage("Please configure Azure AI in settings first. Click the settings icon and add your Azure API key.");
+        setShowToast(true);
+        return;
+      }
+
       try {
-        const selectedModel = models.find((m) => m.model_name === model);
-        if (!selectedModel) {
-          throw new Error("선택한 모델이 유효하지 않습니다.");
-        }
         setIsLoading(true);
         
-        const controller = new AbortController();
-        abortControllerRef.current = controller;
+        // Generate a new conversation ID
+        const conversationId = Date.now().toString();
         
-        const res = await fetch(`${process.env.REACT_APP_FASTAPI_URL}/chat/new_conversation`, {
-          method: "POST",
-          credentials: "include",
-          signal: controller.signal,
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({})
-        });
-        if (!res.ok) {
-          throw new Error('새 대화를 시작하는 데 실패했습니다.');
-        }
-        
-        const data = await res.json();
+        // Create new conversation object
         const newConversation = {
           type: "chat",
-          conversation_id: data.conversation_id,
-          alias: "새 대화",
+          conversation_id: conversationId,
+          alias: message.slice(0, 50) + (message.length > 50 ? "..." : ""),
           starred: false,
           starred_at: null,
-          created_at: data.created_at,
-          isLoading: true
+          created_at: new Date().toISOString(),
+          isLoading: false
         };
+        
+        // Add conversation to context
         addConversation(newConversation);
 
-        navigate(`/chat/${data.conversation_id}`, {
+        // Navigate to chat with initial message
+        navigate(`/chat/${conversationId}`, {
           state: {
             initialMessage: message,
             initialFiles: uploadedFiles,
@@ -139,7 +136,8 @@ function Home({ isTouch }) {
           replace: false,
         });
       } catch (error) {
-        setToastMessage("새 대화를 시작하는 데 실패했습니다.");
+        console.error('Failed to start conversation:', error);
+        setToastMessage("Failed to start conversation. Please check your Azure AI configuration.");
         setShowToast(true);
         setIsLoading(false);
       } finally {
@@ -147,12 +145,11 @@ function Home({ isTouch }) {
       }
     },
     [
-      models,
-      model,
       navigate,
       uploadedFiles,
-      uploadingFiles,
-      addConversation
+      addConversation,
+      useAzureAI,
+      azureApiKey
     ]
   );
 
