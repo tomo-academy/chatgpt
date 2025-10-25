@@ -1,15 +1,25 @@
 import { openai } from "@ai-sdk/openai";
+import { google } from "@ai-sdk/google";
 import { convertToModelMessages, streamText } from "ai";
 import { frontendTools } from "@assistant-ui/react-ai-sdk";
 
 export const maxDuration = 30;
 
+function getModelProvider(modelId: string) {
+  if (modelId.startsWith("gemini")) {
+    return google(modelId);
+  }
+  return openai(modelId);
+}
+
 export async function POST(req: Request) {
   try {
-    const { messages, tools } = await req.json();
+    const { messages, tools, selectedModel = "gpt-4o-mini" } = await req.json();
+
+    const model = getModelProvider(selectedModel);
 
     const result = streamText({
-      model: openai("gpt-4o-mini"),
+      model,
       messages: convertToModelMessages(messages),
       maxOutputTokens: 1200,
       tools: tools ? {
