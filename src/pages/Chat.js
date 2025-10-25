@@ -6,6 +6,7 @@ import { SettingsContext } from "../contexts/SettingsContext";
 import { ConversationsContext } from "../contexts/ConversationsContext";
 import { motion, AnimatePresence } from "framer-motion";
 import { useFileUpload } from "../utils/useFileUpload";
+import { createAzureAIClient } from "../utils/azureAI";
 import Message from "../components/Message";
 import Modal from "../components/Modal";
 import Toast from "../components/Toast";
@@ -732,7 +733,7 @@ function Chat({ isTouch, chatMessageRef }) {
 
       <InputContainer
         isTouch={isTouch}
-        placeholder="답장 입력"
+        placeholder="Type your message..."
         inputText={inputText}
         setInputText={setInputText}
         isLoading={isLoading}
