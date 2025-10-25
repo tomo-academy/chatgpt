@@ -32,6 +32,10 @@ export const SettingsProvider = ({ children }) => {
   const [canToggleDeepResearch, setCanToggleDeepResearch] = useState(false);
   const [canToggleMCP, setCanToggleMCP] = useState(false);
   const [maxImageInput, setMaxImageInput] = useState(1);
+  
+  // Azure AI settings
+  const [azureApiKey, setAzureApiKey] = useState(localStorage.getItem('azureApiKey') || '');
+  const [useAzureAI, setUseAzureAI] = useState(localStorage.getItem('useAzureAI') === 'true');
 
   const fetchModels = async () => {
     try {
@@ -226,6 +230,17 @@ export const SettingsProvider = ({ children }) => {
     }
   };
 
+  // Azure API key management
+  const updateAzureApiKey = (key) => {
+    setAzureApiKey(key);
+    localStorage.setItem('azureApiKey', key);
+  };
+
+  const toggleAzureAI = (enabled) => {
+    setUseAzureAI(enabled);
+    localStorage.setItem('useAzureAI', enabled.toString());
+  };
+
   return (
     <SettingsContext.Provider
       value={{
@@ -258,6 +273,8 @@ export const SettingsProvider = ({ children }) => {
         canToggleMCP,
         canReadImage,
         maxImageInput,
+        azureApiKey,
+        useAzureAI,
         updateModel,
         updateImageModel,
         updateRealtimeModel,
@@ -272,7 +289,9 @@ export const SettingsProvider = ({ children }) => {
         toggleInference,
         toggleSearch,
         toggleDeepResearch,
-        switchImageMode
+        switchImageMode,
+        updateAzureApiKey,
+        toggleAzureAI
       }}
     >
       {children}

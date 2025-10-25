@@ -320,3 +320,96 @@
         padding: 5px 2px 5px 5.5px;
     }
 }
+
+.azure-config-modal {
+  min-width: 400px;
+  max-width: 500px;
+}
+
+.azure-config-header {
+  padding: 20px 24px 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.azure-config-header h3 {
+  margin: 0 0 16px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.azure-config-content {
+  padding: 24px;
+}
+
+.config-section {
+  margin-bottom: 20px;
+}
+
+.config-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #374151;
+  cursor: pointer;
+}
+
+.config-label input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+}
+
+.azure-api-input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  margin-top: 8px;
+  transition: border-color 0.2s ease;
+}
+
+.azure-api-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.1);
+}
+
+.azure-config-buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.config-button {
+  padding: 8px 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.config-button.cancel {
+  background-color: #ffffff;
+  color: #374151;
+}
+
+.config-button.cancel:hover {
+  background-color: #f9fafb;
+}
+
+.config-button.save {
+  background-color: #3b82f6;
+  color: #ffffff;
+  border-color: #3b82f6;
+}
+
+.config-button.save:hover {
+  background-color: #2563eb;
+}

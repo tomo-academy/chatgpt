@@ -1,6 +1,6 @@
 import React, { useState, useContext, useRef, useEffect } from "react";
 import { useLocation } from 'react-router-dom';
-import { RiMenuLine, RiArrowRightSLine, RiShare2Line, RiLightbulbLine, RiEdit2Line, RiImage2Line } from "react-icons/ri";
+import { RiMenuLine, RiArrowRightSLine, RiShare2Line, RiLightbulbLine, RiEdit2Line, RiImage2Line, RiSettings3Line } from "react-icons/ri";
 import { SettingsContext } from "../contexts/SettingsContext";
 import { motion, AnimatePresence } from "framer-motion";
 import { v4 as uuidv4 } from 'uuid';
@@ -23,11 +23,15 @@ function Header({ toggleSidebar, isSidebarOpen, isTouch, chatMessageRef }) {
     canControlReason,
     canControlVerbosity,
     canControlSystemMessage,
+    azureApiKey,
+    useAzureAI,
     updateModel,
     setTemperature,
     setReason,
     setVerbosity,
-    setSystemMessage
+    setSystemMessage,
+    updateAzureApiKey,
+    toggleAzureAI
   } = useContext(SettingsContext);
 
   const location = useLocation();
@@ -37,6 +41,8 @@ function Header({ toggleSidebar, isSidebarOpen, isTouch, chatMessageRef }) {
   const [isModelModalOpen, setIsModelModalOpen] = useState(false);
   const [isControlPanelOpen, setIsControlPanelOpen] = useState(false);
   const [isSystemMessageOpen, setIsSystemMessageOpen] = useState(false);
+  const [isAzureConfigOpen, setIsAzureConfigOpen] = useState(false);
+  const [tempAzureApiKey, setTempAzureApiKey] = useState(azureApiKey);
   const [toastMessage, setToastMessage] = useState("");
   const [toastType, setToastType] = useState("error");
   const [showToast, setShowToast] = useState(false);
@@ -167,7 +173,7 @@ function Header({ toggleSidebar, isSidebarOpen, isTouch, chatMessageRef }) {
     <div className="header">
       <div className="header-left">
         {!isSidebarOpen && (
-          <Tooltip content="사이드바 열기" position="right" isTouch={isTouch}>
+          <Tooltip content="Open sidebar" position="right" isTouch={isTouch}>
             <div className="header-icon menu-icon">
               <RiMenuLine onClick={toggleSidebar} />
             </div>
@@ -180,9 +186,20 @@ function Header({ toggleSidebar, isSidebarOpen, isTouch, chatMessageRef }) {
       </div>
 
       <div className="header-right">
+        <div className="header-icon-wrapper">
+          <Tooltip content="Azure AI Configuration" position="left" isTouch={isTouch}>
+            <div className="header-icon azure-config-icon">
+              <RiSettings3Line
+                onClick={() => setIsAzureConfigOpen(true)}
+                style={{ fontSize: "20px", strokeWidth: 0.3 }}
+              />
+            </div>
+          </Tooltip>
+        </div>
+
         {conversation_id && (
           <div className="header-icon-wrapper">
-            <Tooltip content="공유하기" position="left" isTouch={isTouch}>
+            <Tooltip content="Share" position="left" isTouch={isTouch}>
               <div className="header-icon share-icon">
                 <RiShare2Line onClick={handleShare} />
               </div>
@@ -322,7 +339,7 @@ function Header({ toggleSidebar, isSidebarOpen, isTouch, chatMessageRef }) {
                       value={systemMessage}
                       onChange={(e) => setSystemMessage(e.target.value)}
                       className="system-message-input"
-                      placeholder="내용을 입력하세요."
+                      placeholder="Enter your message..."
                       rows={4}
                     />
                   </motion.div>
@@ -370,6 +387,86 @@ function Header({ toggleSidebar, isSidebarOpen, isTouch, chatMessageRef }) {
                 ))}
               </div>
             </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {isAzureConfigOpen && (
+          <motion.div
+            className="hmodal-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            onClick={() => setIsAzureConfigOpen(false)}
+          >
+            <motion.div
+              className="hmodal azure-config-modal"
+              onClick={(e) => e.stopPropagation()}
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+            >
+              <div className="azure-config-header">
+                <h3>Azure AI Configuration</h3>
+              </div>
+              <div className="azure-config-content">
+                <div className="config-section">
+                  <label className="config-label">
+                    <input
+                      type="checkbox"
+                      checked={useAzureAI}
+                      onChange={(e) => toggleAzureAI(e.target.checked)}
+                    />
+                    Use Azure AI (GPT-4o-mini)
+                  </label>
+                </div>
+                
+                {useAzureAI && (
+                  <div className="config-section">
+                    <label>API Key:</label>
+                    <input
+                      type="password"
+                      value={tempAzureApiKey}
+                      onChange={(e) => setTempAzureApiKey(e.target.value)}
+                      placeholder="Enter your Azure AI API key"
+                      className="azure-api-input"
+                    />
+                  </div>
+                )}
+                
+                <div className="azure-config-buttons">
+                  <button
+                    className="config-button cancel"
+                    onClick={() => {
+                      setTempAzureApiKey(azureApiKey);
+                      setIsAzureConfigOpen(false);
+                    }}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    className="config-button save"
+                    onClick={() => {
+                      if (useAzureAI && !tempAzureApiKey.trim()) {
+                        setToastMessage("Please enter an API key to use Azure AI");
+                        setToastType("error");
+                        setShowToast(true);
+                        return;
+                      }
+                      updateAzureApiKey(tempAzureApiKey);
+                      setIsAzureConfigOpen(false);
+                      setToastMessage("Azure AI configuration saved");
+                      setToastType("success");
+                      setShowToast(true);
+                    }}
+                  >
+                    Save
+                  </button>
+                </div>
+              </div>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>

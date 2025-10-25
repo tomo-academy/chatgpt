@@ -219,7 +219,7 @@ function InputContainer({
     if (inputText.trim()) {
       onSend(inputText);
     } else {
-      setToastMessage("내용을 입력해주세요.");
+      setToastMessage("Please enter a message.");
       setShowToast(true);
     }
   }, [isLoading, inputText, onSend, onCancel]);
@@ -348,16 +348,16 @@ function InputContainer({
                 >
                   <div className="media-option" onClick={handleFileClick}>
                     <FiPaperclip />
-                    파일 업로드
+                    Upload File
                   </div>
                   <div className="media-option" onClick={handleRecordingStart}>
                     <FiMic />
-                    음성 인식
+                    Voice Input
                   </div>
                   {canToggleMCP && (
                     <div className="media-option" onClick={handleMCPClick}>
                       <FiServer style={{ paddingLeft: "0.5px", color: "#5e5bff", strokeWidth: 2.5 }} />
-                      <span className="mcp-text">MCP 서버</span>
+                      <span className="mcp-text">MCP Server</span>
                     </div>
                   )}
                 </motion.div>
@@ -378,7 +378,7 @@ function InputContainer({
                 layout
               >
                 <GoGlobe style={{ strokeWidth: 0.5 }} />
-                <span className="button-text">검색</span>
+                <span className="button-text">Search</span>
               </motion.div>
             )}
             {canToggleInference && (
@@ -393,7 +393,7 @@ function InputContainer({
                 layout
               >
                 <GoLightBulb style={{ strokeWidth: 0.5 }} />
-                <span className="button-text">추론</span>
+                <span className="button-text">Reasoning</span>
               </motion.div>
             )}
             {canToggleDeepResearch && (
@@ -408,7 +408,7 @@ function InputContainer({
                 layout
               >
                 <GoTelescope style={{ strokeWidth: 0.5 }} />
-                <span className="button-text">딥 리서치</span>
+                <span className="button-text">Research</span>
               </motion.div>
             )}
             {canControlSystemMessage && (

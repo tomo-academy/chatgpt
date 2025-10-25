@@ -160,10 +160,13 @@ function Sidebar({
   const { 
     conversations, 
     isLoadingChat, 
+    isRealTimeEnabled,
+    lastFetchTime,
     deleteConversation, 
     deleteAllConversation, 
     updateConversation, 
-    toggleStarConversation 
+    toggleStarConversation,
+    toggleRealTime
   } = useContext(ConversationsContext);
 
   const sortedConversations = useMemo(() => {
@@ -519,11 +522,11 @@ function Sidebar({
         <div className="header sidebar-header">
           <div className="header-left">
             <div className="logo">
-              <img src={logo} alt="NEXA" className="logo-image" />
+              <span className="logo-text">Nexa</span>
             </div>
           </div>
           <div className="header-right">
-            <Tooltip content="사이드바 닫기" position="bottom" isTouch={isTouch}>
+            <Tooltip content="Close sidebar" position="bottom" isTouch={isTouch}>
               <div className="header-icon">
                 <RiMenuLine onClick={toggleSidebar} />
               </div>
@@ -534,19 +537,19 @@ function Sidebar({
         <div className="newtask-container">
           <div className="new-task search" onClick={toggleSearch}>
             <LuSearch />
-            검색
+            Search
           </div>
           <div className="new-task" onClick={handleNewConversation}>
             <LuSquarePen />
-            새 대화
+            New Chat
           </div>
           <div className="new-task" onClick={handleRealtimeConversation}>
             <LuAudioLines />
-            실시간 대화
+            Voice Chat
           </div>
           <div className="new-task" onClick={handleImageGeneration}>
             <LuImage />
-            이미지 생성
+            Image Generation
           </div>
         </div>
 
@@ -562,7 +565,21 @@ function Sidebar({
           ) : (
             <>
               <div className="conversation-header">
-                대화 기록
+                Chat History
+                <div className="realtime-indicator">
+                  <span 
+                    className={`realtime-dot ${isRealTimeEnabled ? 'active' : 'inactive'}`}
+                    title={isRealTimeEnabled ? 'Real-time updates enabled' : 'Real-time updates disabled'}
+                  ></span>
+                  {lastFetchTime && (
+                    <span className="last-update">
+                      {new Date(lastFetchTime).toLocaleTimeString('en-US', { 
+                        hour: '2-digit', 
+                        minute: '2-digit' 
+                      })}
+                    </span>
+                  )}
+                </div>
               </div>
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
@@ -599,7 +616,7 @@ function Sidebar({
                     ))
                 ) : (
                   <div className="no-result">
-                    {conversations.length === 0 ? "대화 내역이 없습니다." : "검색 결과가 없습니다."}
+                    {conversations.length === 0 ? "No conversations yet." : "No search results found."}
                   </div>
                 )}
               </motion.div>
@@ -624,10 +641,10 @@ function Sidebar({
               >
                 <div onClick={handleRefresh} className="dropdown-item user-billing">
                   <div className="billing-text">
-                    {userInfo?.billing?.toFixed(2)}$ 사용됨
+                    ${userInfo?.billing?.toFixed(2)} used
                   </div>
                   <div className="refresh-button">
-                    페이지 새로고침
+                    Refresh Page
                   </div>
                 </div>
                 {userInfo?.admin && (
@@ -635,18 +652,24 @@ function Sidebar({
                     onClick={handleAdminClick}
                     className="dropdown-item"
                   >
-                    사용자 관리
+                    User Management
                   </div>
                 )}
+                <div 
+                  onClick={() => toggleRealTime(!isRealTimeEnabled)}
+                  className="dropdown-item"
+                >
+                  Real-time Updates {isRealTimeEnabled ? 'Off' : 'On'}
+                </div>
                 <div onClick={handleDeleteAll} className="dropdown-item">
-                  전체 대화 삭제
+                  Delete All Chats
                 </div>
                 <div
                   onClick={handleLogoutClick}
                   className="dropdown-item"
                   style={{ color: "red" }}
                 >
-                  로그아웃
+                  Logout
                 </div>
               </motion.div>
             )}
@@ -680,12 +703,12 @@ function Sidebar({
               {selectedConversationId && (
                 <>
                   {conversations.find(c => c.conversation_id === selectedConversationId)?.starred ? (
-                    <li onClick={() => handleCustomAction("star")}>즐겨찾기 해제</li>
+                    <li onClick={() => handleCustomAction("star")}>Remove from Favorites</li>
                   ) : (
-                    <li onClick={() => handleCustomAction("star")}>즐겨찾기</li>
+                    <li onClick={() => handleCustomAction("star")}>Add to Favorites</li>
                   )}
-                  <li onClick={() => handleCustomAction("rename")}>이름 편집</li>
-                  <li onClick={() => handleCustomAction("delete")}>삭제</li>
+                  <li onClick={() => handleCustomAction("rename")}>Rename</li>
+                  <li onClick={() => handleCustomAction("delete")}>Delete</li>
                 </>
               )}
             </ul>

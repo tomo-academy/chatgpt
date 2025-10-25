@@ -241,13 +241,22 @@ function AppContent() {
       >
         {shouldShowLogo && (
           <div className="header" style={{ padding: "0 20px" }}>
-            <img
-              src={logo}
-              alt="NEXA"
-              width="143.5px"
+            <span
+              style={{
+                fontSize: "24px",
+                fontWeight: "700",
+                background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                WebkitBackgroundClip: "text",
+                backgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                color: "transparent",
+                cursor: "pointer",
+                letterSpacing: "-0.5px"
+              }}
               onClick={() => navigate("/")}
-              style={{ cursor: "pointer" }}
-            />
+            >
+              Nexa
+            </span>
           </div>
         )}
 

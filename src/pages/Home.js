@@ -209,13 +209,13 @@ function Home({ isTouch }) {
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.3 }}
         >
-          무엇을 도와드릴까요?
+          How can I help you today?
         </motion.div>
       </div>
 
       <InputContainer
         isTouch={isTouch}
-        placeholder="내용 입력"
+        placeholder="Type your message here..."
         extraClassName="main-input-container"
         inputText={inputText}
         setInputText={setInputText}

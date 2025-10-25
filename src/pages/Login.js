@@ -67,7 +67,20 @@ function Login() {
       transition={{ duration: 0.4 }}
     >
       <div className="auth-logo">
-        <img src={logo} alt="NEXA" className="logo-image" />
+        <span
+          style={{
+            fontSize: "32px",
+            fontWeight: "700",
+            background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+            WebkitBackgroundClip: "text",
+            backgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+            color: "transparent",
+            letterSpacing: "-1px"
+          }}
+        >
+          Nexa
+        </span>
       </div>
       <form className="auth-input-container" onSubmit={(e) => {
         e.preventDefault();
