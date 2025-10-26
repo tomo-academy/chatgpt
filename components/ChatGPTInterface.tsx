@@ -1,16 +1,15 @@
 "use client";
 
-import { MenuIcon, ShareIcon } from "lucide-react";
+import { ShareIcon } from "lucide-react";
 import type { TooltipContentProps } from "@radix-ui/react-tooltip";
 import { ComponentPropsWithRef, type FC } from "react";
 
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import { ModelPicker } from "./ModelPicker";
 import { Thread } from "@/components/assistant-ui/thread";
-import { ThreadList } from "@/components/assistant-ui/thread-list";
+import { AppSidebar } from "./app-sidebar";
+import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 
 type ButtonWithTooltipProps = ComponentPropsWithRef<typeof Button> & {
   tooltip: string;
@@ -36,44 +35,10 @@ const ButtonWithTooltip: FC<ButtonWithTooltipProps> = ({
   );
 };
 
-const TopLeft: FC = () => {
-  return (
-    <div className="flex h-full w-full items-center gap-2 px-3 text-sm font-semibold">
-      <div className="inline size-4 bg-blue-500 rounded-sm flex items-center justify-center">
-        <span className="text-white text-xs">🤖</span>
-      </div>
-      <span>NEXA</span>
-    </div>
-  );
-};
-
-const MainLeft: FC = () => {
-  return <ThreadList />;
-};
-
-const LeftBarSheet: FC = () => {
-  return (
-    <Sheet>
-      <SheetTrigger asChild>
-        <Button variant="outline" size="icon" className="shrink-0 md:hidden">
-          <MenuIcon className="size-4" />
-          <span className="sr-only">Toggle navigation menu</span>
-        </Button>
-      </SheetTrigger>
-      <SheetContent side="left" className="flex flex-col">
-        <div className="mt-6 flex flex-col gap-1">
-          <TopLeft />
-          <MainLeft />
-        </div>
-      </SheetContent>
-    </Sheet>
-  );
-};
-
 const Header: FC = () => {
   return (
     <header className="flex gap-2">
-      <LeftBarSheet />
+      <SidebarTrigger className="md:hidden" />
       <ModelPicker />
       <ButtonWithTooltip
         variant="outline"
@@ -89,24 +54,17 @@ const Header: FC = () => {
 };
 
 export const ChatGPTInterface = () => {
-  const sideStyle = "bg-muted/40 px-3 py-2";
-  const topStyle = "border-b";
-  const leftStyle = "border-r hidden md:block";
-
   return (
-    <div className="grid h-full w-full grid-flow-col grid-rows-[auto_1fr] md:grid-cols-[250px_1fr]">
-      <div className={cn(sideStyle, leftStyle, topStyle)}>
-        <TopLeft />
-      </div>
-      <div className={cn(sideStyle, leftStyle, "overflow-y-auto")}>
-        <MainLeft />
-      </div>
-      <div className={cn(sideStyle, topStyle)}>
-        <Header />
-      </div>
-      <div className="overflow-hidden bg-background">
-        <Thread />
-      </div>
-    </div>
+    <SidebarProvider>
+      <AppSidebar user={undefined} />
+      <SidebarInset className="flex flex-col h-screen">
+        <div className="bg-muted/40 px-3 py-2 border-b">
+          <Header />
+        </div>
+        <main className="flex-1 overflow-hidden bg-background">
+          <Thread />
+        </main>
+      </SidebarInset>
+    </SidebarProvider>
   );
 };
