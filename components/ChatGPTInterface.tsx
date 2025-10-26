@@ -42,7 +42,7 @@ const TopLeft: FC = () => {
       <div className="inline size-4 bg-blue-500 rounded-sm flex items-center justify-center">
         <span className="text-white text-xs">🤖</span>
       </div>
-      <span>ChatGPT</span>
+      <span>NEXA</span>
     </div>
   );
 };

@@ -56,4 +56,14 @@
   body {
     @apply bg-background text-foreground;
   }
+  input:focus,
+  textarea:focus,
+  button:focus,
+  *:focus,
+  *:focus-visible,
+  *:focus-within {
+    outline: none !important;
+    box-shadow: none !important;
+    border-color: inherit !important;
+  }
 }
