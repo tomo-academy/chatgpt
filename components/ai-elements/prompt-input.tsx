@@ -5,12 +5,11 @@ import { SendIcon, Square } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
-interface InputProps extends React.HTMLAttributes<HTMLDivElement> {
-  onSubmit?: (e: React.FormEvent) => void;
+interface InputProps extends React.FormHTMLAttributes<HTMLFormElement> {
   children: React.ReactNode;
 }
 
-interface PromptInputTextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {}
+type PromptInputTextareaProps = React.TextareaHTMLAttributes<HTMLTextAreaElement>;
 
 interface PromptInputSubmitProps extends React.ComponentProps<typeof Button> {
   status?: 'ready' | 'streaming';

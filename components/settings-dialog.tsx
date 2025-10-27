@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import type { User as NextAuthUser } from "next-auth";
+import type { User } from "@/lib/types";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,7 +16,7 @@ import { Switch } from "@/components/ui/switch";
 import { toast } from "./toast";
 
 interface SettingsDialogProps {
-  user: NextAuthUser;
+  user: User;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }

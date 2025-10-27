@@ -1,7 +1,7 @@
 'use client';
 
 import { experimental_useObject as useObject } from '@ai-sdk/react';
-import { codeBlockSchema } from '@/app/api/codegen/route';
+import { codeBlockSchema } from '@/lib/schemas';
 import {
   Input,
   PromptInputTextarea,
@@ -118,35 +118,18 @@ export default TodoList;`,
         <section className="bg-muted/20 rounded-lg p-6">
           <h2 className="text-2xl font-semibold mb-4">Usage Example</h2>
           <p className="text-muted-foreground mb-4">
-            Here's how to use the CodeBlock component in your project:
+            Here&apos;s how to use the CodeBlock component in your project:
           </p>
           <CodeBlock 
-            code={`'use client';
+            code={`import { CodeBlock } from '@/components/ai-elements/code-block';
 
-import {
-  CodeBlock,
-  CodeBlockCopyButton,
-} from '@/components/ai-elements/code-block';
+const myCode = 'console.log("Hello World!");';
 
-const code = \`function MyComponent(props) {
+export default function MyComponent() {
   return (
-    <div>
-      <h1>Hello, {props.name}!</h1>
-      <p>This is an example React component.</p>
-    </div>
+    <CodeBlock code={myCode} language="javascript" />
   );
-}\`;
-
-const Example = () => (
-  <CodeBlock code={code} language="jsx">
-    <CodeBlockCopyButton
-      onCopy={() => console.log('Copied code to clipboard')}
-      onError={() => console.error('Failed to copy code to clipboard')}
-    />
-  </CodeBlock>
-);
-
-export default Example;`}
+}`}
             language="tsx"
             showLineNumbers={true}
           >
@@ -175,7 +158,7 @@ export default Example;`}
                     >
                       <CodeBlockCopyButton
                         onCopy={() => console.log('Code copied to clipboard!')}
-                        onError={(error) => console.error('Failed to copy:', error)}
+                        onCopyError={(error) => console.error('Failed to copy:', error)}
                       />
                     </CodeBlock>
                   </div>
@@ -223,7 +206,7 @@ export default Example;`}
               <CodeBlock code={exampleCode.myComponent} language="jsx">
                 <CodeBlockCopyButton
                   onCopy={() => console.log('Copied code to clipboard')}
-                  onError={() => console.error('Failed to copy code to clipboard')}
+                  onCopyError={() => console.error('Failed to copy code to clipboard')}
                 />
               </CodeBlock>
             </div>

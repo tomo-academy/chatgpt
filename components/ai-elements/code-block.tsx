@@ -1,41 +1,43 @@
 "use client";
 
 import React, { useState } from 'react';
-import { PrismLight as SyntaxHighlighter } from 'react-syntax-highlighter/dist/esm/prism-light';
-import { oneDark, oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { CheckIcon, CopyIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
-// Import only the languages we commonly use
-import javascript from 'react-syntax-highlighter/dist/esm/languages/prism/javascript';
-import typescript from 'react-syntax-highlighter/dist/esm/languages/prism/typescript';
-import jsx from 'react-syntax-highlighter/dist/esm/languages/prism/jsx';
-import tsx from 'react-syntax-highlighter/dist/esm/languages/prism/tsx';
-import css from 'react-syntax-highlighter/dist/esm/languages/prism/css';
-import python from 'react-syntax-highlighter/dist/esm/languages/prism/python';
-import bash from 'react-syntax-highlighter/dist/esm/languages/prism/bash';
-import json from 'react-syntax-highlighter/dist/esm/languages/prism/json';
-import markdown from 'react-syntax-highlighter/dist/esm/languages/prism/markdown';
-import sql from 'react-syntax-highlighter/dist/esm/languages/prism/sql';
-
-// Register languages
-SyntaxHighlighter.registerLanguage('javascript', javascript);
-SyntaxHighlighter.registerLanguage('js', javascript);
-SyntaxHighlighter.registerLanguage('typescript', typescript);
-SyntaxHighlighter.registerLanguage('ts', typescript);
-SyntaxHighlighter.registerLanguage('jsx', jsx);
-SyntaxHighlighter.registerLanguage('tsx', tsx);
-SyntaxHighlighter.registerLanguage('css', css);
-SyntaxHighlighter.registerLanguage('python', python);
-SyntaxHighlighter.registerLanguage('py', python);
-SyntaxHighlighter.registerLanguage('bash', bash);
-SyntaxHighlighter.registerLanguage('shell', bash);
-SyntaxHighlighter.registerLanguage('sh', bash);
-SyntaxHighlighter.registerLanguage('json', json);
-SyntaxHighlighter.registerLanguage('markdown', markdown);
-SyntaxHighlighter.registerLanguage('md', markdown);
-SyntaxHighlighter.registerLanguage('sql', sql);
+// Simple syntax highlighting with CSS classes
+const getLanguageClass = (language: string) => {
+  const lang = language.toLowerCase();
+  switch (lang) {
+    case 'javascript':
+    case 'js':
+      return 'language-javascript';
+    case 'typescript':
+    case 'ts':
+      return 'language-typescript';
+    case 'jsx':
+    case 'tsx':
+      return 'language-jsx';
+    case 'css':
+      return 'language-css';
+    case 'python':
+    case 'py':
+      return 'language-python';
+    case 'bash':
+    case 'shell':
+    case 'sh':
+      return 'language-bash';
+    case 'json':
+      return 'language-json';
+    case 'markdown':
+    case 'md':
+      return 'language-markdown';
+    case 'sql':
+      return 'language-sql';
+    default:
+      return 'language-text';
+  }
+};
 
 interface CodeBlockProps extends React.HTMLAttributes<HTMLDivElement> {
   code: string;
@@ -44,9 +46,9 @@ interface CodeBlockProps extends React.HTMLAttributes<HTMLDivElement> {
   children?: React.ReactNode;
 }
 
-interface CodeBlockCopyButtonProps extends React.ComponentProps<typeof Button> {
+interface CodeBlockCopyButtonProps extends Omit<React.ComponentProps<typeof Button>, 'onError'> {
   onCopy?: () => void;
-  onError?: (error: Error) => void;
+  onCopyError?: (error: Error) => void;
   timeout?: number;
   children?: React.ReactNode;
 }
@@ -61,7 +63,6 @@ export function CodeBlock({
   className,
   ...props
 }: CodeBlockProps) {
-  // Detect theme based on CSS custom properties or system preference
   const [isDark, setIsDark] = React.useState(false);
 
   React.useEffect(() => {
@@ -74,7 +75,6 @@ export function CodeBlock({
 
     checkTheme();
     
-    // Listen for theme changes
     const observer = new MutationObserver(checkTheme);
     observer.observe(document.documentElement, {
       attributes: true,
@@ -90,23 +90,17 @@ export function CodeBlock({
     };
   }, []);
 
-  // List of supported languages
-  const supportedLanguages = [
-    'javascript', 'js', 'typescript', 'ts', 'jsx', 'tsx', 
-    'css', 'python', 'py', 'bash', 'shell', 'sh', 
-    'json', 'markdown', 'md', 'sql'
-  ];
+  const languageClass = getLanguageClass(language);
   
-  // Use text if language is not supported
-  const displayLanguage = supportedLanguages.includes(language.toLowerCase()) 
-    ? language.toLowerCase() 
-    : 'text';
+  // Split code into lines for line numbers
+  const lines = code.split('\n');
 
   return (
     <CodeBlockContext.Provider value={{ code }}>
       <div
         className={cn(
-          "relative rounded-lg border bg-muted/20 overflow-hidden",
+          "relative rounded-lg border overflow-hidden",
+          isDark ? "bg-gray-900 border-gray-700" : "bg-gray-50 border-gray-200",
           className
         )}
         {...props}
@@ -116,32 +110,54 @@ export function CodeBlock({
             {children}
           </div>
         )}
-        <SyntaxHighlighter
-          language={displayLanguage}
-          style={isDark ? oneDark : oneLight}
-          showLineNumbers={showLineNumbers}
-          customStyle={{
-            margin: 0,
-            padding: '1rem',
-            background: 'transparent',
-            fontSize: '14px',
-            lineHeight: '1.6',
-          }}
-          lineNumberStyle={{
-            minWidth: '3em',
-            paddingRight: '1em',
-            textAlign: 'right',
-            userSelect: 'none',
-            opacity: 0.6,
-          }}
-          codeTagProps={{
-            style: {
-              fontFamily: 'ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace',
-            }
-          }}
-        >
-          {code}
-        </SyntaxHighlighter>
+        
+        {/* Language label */}
+        {language && (
+          <div className={cn(
+            "px-4 py-2 text-xs font-medium border-b",
+            isDark 
+              ? "bg-gray-800 border-gray-700 text-gray-300" 
+              : "bg-gray-100 border-gray-200 text-gray-600"
+          )}>
+            {language}
+          </div>
+        )}
+        
+        <div className="overflow-x-auto">
+          <pre 
+            className={cn(
+              "p-4 text-sm leading-relaxed",
+              isDark ? "text-gray-100" : "text-gray-800"
+            )}
+            style={{ 
+              fontFamily: 'ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace' 
+            }}
+          >
+            {showLineNumbers ? (
+              <div className="flex">
+                <div className={cn(
+                  "pr-4 text-right select-none",
+                  isDark ? "text-gray-500" : "text-gray-400"
+                )}>
+                  {lines.map((_, index) => (
+                    <div key={index + 1} className="leading-relaxed">
+                      {index + 1}
+                    </div>
+                  ))}
+                </div>
+                <div className="flex-1">
+                  <code className={languageClass}>
+                    {code}
+                  </code>
+                </div>
+              </div>
+            ) : (
+              <code className={languageClass}>
+                {code}
+              </code>
+            )}
+          </pre>
+        </div>
       </div>
     </CodeBlockContext.Provider>
   );
@@ -149,7 +165,7 @@ export function CodeBlock({
 
 export function CodeBlockCopyButton({
   onCopy = () => console.log('Copied code to clipboard'),
-  onError = (error) => console.error('Failed to copy code to clipboard', error),
+  onCopyError = (error) => console.error('Failed to copy code to clipboard', error),
   timeout = 2000,
   children,
   className,
@@ -174,7 +190,7 @@ export function CodeBlockCopyButton({
         setCopied(false);
       }, timeout);
     } catch (error) {
-      onError?.(error as Error);
+      onCopyError?.(error as Error);
     }
   };
 

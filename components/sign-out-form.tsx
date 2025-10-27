@@ -1,6 +1,9 @@
 import Form from "next/form";
 
-import { signOut } from "@/app/(auth)/auth";
+// Mock signOut function since we don't have auth
+const signOut = async () => {
+  console.log("Sign out functionality not implemented");
+};
 
 export const SignOutForm = () => {
   return (
@@ -8,9 +11,7 @@ export const SignOutForm = () => {
       action={async () => {
         "use server";
 
-        await signOut({
-          redirectTo: "/",
-        });
+        await signOut();
       }}
       className="w-full"
     >

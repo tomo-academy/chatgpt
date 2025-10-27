@@ -13,9 +13,8 @@ import {
   LogOut
 } from "lucide-react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
-import type { User } from "next-auth";
-import { signOut, useSession } from "next-auth/react";
+
+import type { User } from "@/lib/types";
 import { useTheme } from "next-themes";
 import { useState } from "react";
 import {
@@ -31,18 +30,13 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { guestRegex } from "@/lib/constants";
-import { LoaderIcon } from "./icons";
+
 import { SettingsDialog } from "./settings-dialog";
 import { toast } from "./toast";
 
 export function SidebarUserNav({ user }: { user: User }) {
-  const router = useRouter();
-  const { data, status } = useSession();
   const { setTheme, resolvedTheme } = useTheme();
   const [settingsOpen, setSettingsOpen] = useState(false);
-
-  const isGuest = guestRegex.test(data?.user?.email ?? "");
 
   return (
     <>
@@ -50,37 +44,23 @@ export function SidebarUserNav({ user }: { user: User }) {
       <SidebarMenuItem>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            {status === "loading" ? (
-              <SidebarMenuButton className="h-10 justify-between bg-background data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
-                <div className="flex flex-row gap-2">
-                  <div className="size-6 animate-pulse rounded-full bg-zinc-500/30" />
-                  <span className="animate-pulse rounded-md bg-zinc-500/30 text-transparent">
-                    Loading auth status
-                  </span>
-                </div>
-                <div className="animate-spin text-zinc-500">
-                  <LoaderIcon />
-                </div>
-              </SidebarMenuButton>
-            ) : (
-              <SidebarMenuButton
-                className="h-10 bg-background data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-                data-testid="user-nav-button"
-              >
-                <Image
-                  alt={user.name || user.email || "User"}
-                  className="rounded-full object-cover"
-                  height={24}
-                  src={user.image || `https://avatar.vercel.sh/${user.email}`}
-                  width={24}
-                  unoptimized
-                />
-                <span className="truncate" data-testid="user-email">
-                  {isGuest ? "Guest" : user?.email}
-                </span>
-                <ChevronUp className="ml-auto" />
-              </SidebarMenuButton>
-            )}
+            <SidebarMenuButton
+              className="h-10 bg-background data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+              data-testid="user-nav-button"
+            >
+              <Image
+                alt="Guest User"
+                className="rounded-full object-cover"
+                height={24}
+                src="https://avatar.vercel.sh/guest"
+                width={24}
+                unoptimized
+              />
+              <span className="truncate" data-testid="user-email">
+                Guest
+              </span>
+              <ChevronUp className="ml-auto" />
+            </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
             className="w-56"
@@ -91,10 +71,10 @@ export function SidebarUserNav({ user }: { user: User }) {
             <DropdownMenuLabel className="font-normal">
               <div className="flex flex-col space-y-1">
                 <p className="leading-none text-sm font-medium">
-                  {isGuest ? "Guest" : user?.email}
+                  Guest User
                 </p>
                 <p className="leading-none text-xs text-muted-foreground">
-                  {isGuest ? "Sign in to save your chats" : "Manage your account"}
+                  Enjoy NEXA without an account
                 </p>
               </div>
             </DropdownMenuLabel>
@@ -184,28 +164,15 @@ export function SidebarUserNav({ user }: { user: User }) {
               <button
                 className="w-full cursor-pointer"
                 onClick={() => {
-                  if (status === "loading") {
-                    toast({
-                      type: "error",
-                      description:
-                        "Checking authentication status, please try again!",
-                    });
-
-                    return;
-                  }
-
-                  if (isGuest) {
-                    router.push("/login");
-                  } else {
-                    signOut({
-                      redirectTo: "/",
-                    });
-                  }
+                  toast({
+                    type: "success", 
+                    description: "Authentication coming soon!"
+                  });
                 }}
                 type="button"
               >
                 <LogOut className="mr-2 h-4 w-4" />
-                {isGuest ? "Login to your account" : "Sign out"}
+                Login (Coming Soon)
               </button>
             </DropdownMenuItem>
           </DropdownMenuContent>

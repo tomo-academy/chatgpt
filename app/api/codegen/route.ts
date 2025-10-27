@@ -1,12 +1,6 @@
 import { streamObject } from 'ai';
 import { openai } from '@ai-sdk/openai';
-import { z } from 'zod';
-
-export const codeBlockSchema = z.object({
-  language: z.string(),
-  filename: z.string(),
-  code: z.string(),
-});
+import { codeBlockSchema } from '@/lib/schemas';
 
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 30;

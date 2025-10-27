@@ -9,7 +9,7 @@ import {
   useIsMarkdownCodeBlock,
 } from "@assistant-ui/react-markdown";
 import remarkGfm from "remark-gfm";
-import { type FC, memo } from "react";
+import React, { type FC, memo } from "react";
 
 import { CodeBlock, CodeBlockCopyButton } from "@/components/ai-elements/code-block";
 import { cn } from "@/lib/utils";
@@ -26,7 +26,7 @@ const MarkdownTextImpl = () => {
 
 export const MarkdownText = memo(MarkdownTextImpl);
 
-const CodeHeader: FC<CodeHeaderProps> = ({ language, code }) => {
+const CodeHeader: FC<CodeHeaderProps> = () => {
   return null; // We'll handle this in the CodeBlock component
 };
 
@@ -167,24 +167,26 @@ const defaultComponents = memoizeMarkdownComponents({
     />
   ),
   pre: function Pre({ className, children, ...props }) {
-    // Extract language and code from the code element
-    const codeElement = children?.props;
-    const language = codeElement?.className?.replace('language-', '') || 'text';
-    const code = codeElement?.children || '';
+    // Check if children is a React element with code
+    if (React.isValidElement(children) && children.props) {
+      const codeElement = children.props;
+      const language = codeElement?.className?.replace('language-', '') || 'text';
+      const code = codeElement?.children || '';
 
-    if (typeof code === 'string') {
-      return (
-        <div className="my-4">
-          <CodeBlock
-            code={code.trim()}
-            language={language}
-            showLineNumbers={true}
-            className="!rounded-lg"
-          >
-            <CodeBlockCopyButton />
-          </CodeBlock>
-        </div>
-      );
+      if (typeof code === 'string') {
+        return (
+          <div className="my-4">
+            <CodeBlock
+              code={code.trim()}
+              language={language}
+              showLineNumbers={true}
+              className="!rounded-lg"
+            >
+              <CodeBlockCopyButton />
+            </CodeBlock>
+          </div>
+        );
+      }
     }
 
     // Fallback to default pre
