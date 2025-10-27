@@ -64,13 +64,13 @@ export function CodeBlock({
     <CodeBlockContext.Provider value={{ code }}>
       <div
         className={cn(
-          "relative rounded-lg border bg-background overflow-hidden",
+          "relative rounded-lg border bg-muted/20 overflow-hidden",
           className
         )}
         {...props}
       >
         {children && (
-          <div className="absolute top-2 right-2 z-10">
+          <div className="absolute top-3 right-3 z-10">
             {children}
           </div>
         )}
@@ -83,7 +83,7 @@ export function CodeBlock({
             padding: '1rem',
             background: 'transparent',
             fontSize: '14px',
-            lineHeight: '1.5',
+            lineHeight: '1.6',
           }}
           lineNumberStyle={{
             minWidth: '3em',
@@ -106,8 +106,8 @@ export function CodeBlock({
 }
 
 export function CodeBlockCopyButton({
-  onCopy,
-  onError,
+  onCopy = () => console.log('Copied code to clipboard'),
+  onError = (error) => console.error('Failed to copy code to clipboard', error),
   timeout = 2000,
   children,
   className,
@@ -138,25 +138,28 @@ export function CodeBlockCopyButton({
 
   return (
     <Button
-      variant="ghost"
+      variant="secondary"
       size="sm"
       onClick={handleCopy}
       className={cn(
-        "h-8 w-8 p-0 text-muted-foreground hover:text-foreground",
+        "h-8 px-3 text-xs font-medium transition-all duration-200",
+        copied 
+          ? "bg-green-500 text-white hover:bg-green-600" 
+          : "bg-background/80 backdrop-blur-sm text-foreground hover:bg-background",
         className
       )}
       {...props}
     >
       {children || (
-        copied ? (
-          <CheckIcon className="h-4 w-4" />
-        ) : (
-          <CopyIcon className="h-4 w-4" />
-        )
+        <>
+          {copied ? (
+            <CheckIcon className="h-3 w-3 mr-1" />
+          ) : (
+            <CopyIcon className="h-3 w-3 mr-1" />
+          )}
+          {copied ? 'Copied!' : 'Copy'}
+        </>
       )}
-      <span className="sr-only">
-        {copied ? 'Copied to clipboard' : 'Copy to clipboard'}
-      </span>
     </Button>
   );
 }

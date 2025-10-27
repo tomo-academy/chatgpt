@@ -29,7 +29,7 @@ export default function CodeBlockDemo() {
 
   // Example code blocks for demonstration
   const exampleCode = {
-    simpleReact: `function MyComponent(props) {
+    myComponent: `function MyComponent(props) {
   return (
     <div>
       <h1>Hello, {props.name}!</h1>
@@ -114,6 +114,46 @@ export default TodoList;`,
 
       <div className="max-w-6xl mx-auto p-6 space-y-8">
         
+        {/* Usage Example Section */}
+        <section className="bg-muted/20 rounded-lg p-6">
+          <h2 className="text-2xl font-semibold mb-4">Usage Example</h2>
+          <p className="text-muted-foreground mb-4">
+            Here's how to use the CodeBlock component in your project:
+          </p>
+          <CodeBlock 
+            code={`'use client';
+
+import {
+  CodeBlock,
+  CodeBlockCopyButton,
+} from '@/components/ai-elements/code-block';
+
+const code = \`function MyComponent(props) {
+  return (
+    <div>
+      <h1>Hello, {props.name}!</h1>
+      <p>This is an example React component.</p>
+    </div>
+  );
+}\`;
+
+const Example = () => (
+  <CodeBlock code={code} language="jsx">
+    <CodeBlockCopyButton
+      onCopy={() => console.log('Copied code to clipboard')}
+      onError={() => console.error('Failed to copy code to clipboard')}
+    />
+  </CodeBlock>
+);
+
+export default Example;`}
+            language="tsx"
+            showLineNumbers={true}
+          >
+            <CodeBlockCopyButton />
+          </CodeBlock>
+        </section>
+        
         {/* AI Code Generator Section */}
         <section>
           <h2 className="text-2xl font-semibold mb-4">AI Code Generator</h2>
@@ -177,14 +217,10 @@ export default TodoList;`,
           <h2 className="text-2xl font-semibold mb-6">Examples</h2>
           
           <div className="grid gap-8 lg:grid-cols-2">
-            {/* Simple React Example - Your Example */}
+            {/* Your Example Implementation */}
             <div>
-              <h3 className="text-lg font-medium mb-4">Simple React Component (Your Example)</h3>
-              <CodeBlock
-                code={exampleCode.simpleReact}
-                language="jsx"
-                showLineNumbers={false}
-              >
+              <h3 className="text-lg font-medium mb-4">React Component (Your Example Pattern)</h3>
+              <CodeBlock code={exampleCode.myComponent} language="jsx">
                 <CodeBlockCopyButton
                   onCopy={() => console.log('Copied code to clipboard')}
                   onError={() => console.error('Failed to copy code to clipboard')}
@@ -200,9 +236,7 @@ export default TodoList;`,
                 language="javascript"
                 showLineNumbers={true}
               >
-                <CodeBlockCopyButton
-                  onCopy={() => console.log('JavaScript code copied!')}
-                />
+                <CodeBlockCopyButton />
               </CodeBlock>
             </div>
           </div>
@@ -210,15 +244,13 @@ export default TodoList;`,
           <div className="mt-8">
             {/* React Example */}
             <div>
-              <h3 className="text-lg font-medium mb-4">Complex React Component (Todo List)</h3>
+              <h3 className="text-lg font-medium mb-4">Complex React Component</h3>
               <CodeBlock
                 code={exampleCode.react}
                 language="jsx"
                 showLineNumbers={true}
               >
-                <CodeBlockCopyButton
-                  onCopy={() => console.log('React code copied!')}
-                />
+                <CodeBlockCopyButton />
               </CodeBlock>
             </div>
           </div>
