@@ -1,8 +1,9 @@
 "use client";
 
-import { MenuIcon, ShareIcon } from "lucide-react";
+import { MenuIcon, ShareIcon, CodeIcon } from "lucide-react";
 import type { TooltipContentProps } from "@radix-ui/react-tooltip";
 import { ComponentPropsWithRef, type FC } from "react";
+import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -75,6 +76,17 @@ const Header: FC = () => {
     <header className="flex gap-2">
       <LeftBarSheet />
       <ModelPicker />
+      <Link href="/demo">
+        <ButtonWithTooltip
+          variant="outline"
+          size="icon"
+          tooltip="CodeBlock Demo"
+          side="bottom"
+          className="shrink-0"
+        >
+          <CodeIcon className="size-4" />
+        </ButtonWithTooltip>
+      </Link>
       <ButtonWithTooltip
         variant="outline"
         size="icon"
