@@ -40,9 +40,9 @@ const TopLeft: FC = () => {
   return (
     <div className="flex h-full w-full items-center gap-2 px-3 text-sm font-semibold">
       <div className="inline size-4 bg-blue-500 rounded-sm flex items-center justify-center">
-        <span className="text-white text-xs">🤖</span>
+        <span className="text-white text-xs">⚡</span>
       </div>
-      <span>ChatGPT</span>
+      <span>NEXA</span>
     </div>
   );
 };
@@ -88,7 +88,7 @@ const Header: FC = () => {
   );
 };
 
-export const ChatGPTInterface = () => {
+export const NEXAInterface = () => {
   const sideStyle = "bg-muted/40 px-3 py-2";
   const topStyle = "border-b";
   const leftStyle = "border-r hidden md:block";

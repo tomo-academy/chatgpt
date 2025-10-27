@@ -1,6 +1,6 @@
 "use client";
 
-import { ChatGPTInterface } from "./ChatGPTInterface";
+import { NEXAInterface } from "./NEXAInterface";
 import ChatProvider from "@/components/ChatProvider";
 import { useEffect, useState } from "react";
 
@@ -22,7 +22,7 @@ export default function ChatApp() {
   return (
     <ChatProvider>
       <main className="h-screen">
-        <ChatGPTInterface />
+        <NEXAInterface />
       </main>
     </ChatProvider>
   );

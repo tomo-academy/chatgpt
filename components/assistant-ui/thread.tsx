@@ -143,16 +143,18 @@ const Composer: FC = () => {
   return (
     <div className="aui-composer-wrapper sticky bottom-0 mx-auto flex w-full max-w-[var(--thread-max-width)] flex-col gap-4 overflow-visible rounded-t-3xl bg-background pb-4 md:pb-6">
       <ThreadScrollToBottom />
-      <ComposerPrimitive.Root className="aui-composer-root relative flex w-full flex-col rounded-3xl border border-border bg-muted px-1 pt-2 shadow-[0_9px_9px_0px_rgba(0,0,0,0.01),0_2px_5px_0px_rgba(0,0,0,0.06)] dark:border-muted-foreground/15">
+      <ComposerPrimitive.Root className="aui-composer-root relative flex w-full flex-col rounded-3xl border border-border bg-muted shadow-[0_9px_9px_0px_rgba(0,0,0,0.01),0_2px_5px_0px_rgba(0,0,0,0.06)] dark:border-muted-foreground/15">
         <ComposerAttachments />
-        <ComposerPrimitive.Input
-          placeholder="Send a message..."
-          className="aui-composer-input mb-1 max-h-32 min-h-16 w-full resize-none bg-transparent px-3.5 pt-1.5 pb-3 text-base outline-none placeholder:text-muted-foreground focus:outline-primary"
-          rows={1}
-          autoFocus
-          aria-label="Message input"
-        />
-        <ComposerAction />
+        <div className="flex items-end px-1 pt-2 pb-2">
+          <ComposerPrimitive.Input
+            placeholder="Send a message..."
+            className="aui-composer-input flex-1 max-h-32 min-h-12 w-full resize-none bg-transparent px-3.5 py-3 text-base outline-none placeholder:text-muted-foreground focus:outline-none"
+            rows={1}
+            autoFocus
+            aria-label="Message input"
+          />
+          <ComposerAction />
+        </div>
       </ComposerPrimitive.Root>
     </div>
   );
@@ -160,7 +162,7 @@ const Composer: FC = () => {
 
 const ComposerAction: FC = () => {
   return (
-    <div className="aui-composer-action-wrapper relative mx-1 mt-2 mb-2 flex items-center justify-between">
+    <div className="aui-composer-action-wrapper flex items-center justify-center ml-2 mr-1">
       <ComposerAddAttachment />
 
       <ThreadPrimitive.If running={false}>
@@ -171,7 +173,7 @@ const ComposerAction: FC = () => {
             type="submit"
             variant="default"
             size="icon"
-            className="aui-composer-send size-[34px] rounded-full p-1"
+            className="aui-composer-send size-[34px] rounded-full p-1 ml-2"
             aria-label="Send message"
           >
             <ArrowUpIcon className="aui-composer-send-icon size-5" />
@@ -185,7 +187,7 @@ const ComposerAction: FC = () => {
             type="button"
             variant="default"
             size="icon"
-            className="aui-composer-cancel size-[34px] rounded-full border border-muted-foreground/60 hover:bg-primary/75 dark:border-muted-foreground/90"
+            className="aui-composer-cancel size-[34px] rounded-full border border-muted-foreground/60 hover:bg-primary/75 dark:border-muted-foreground/90 ml-2"
             aria-label="Stop generating"
           >
             <Square className="aui-composer-cancel-icon size-3.5 fill-white dark:fill-black" />

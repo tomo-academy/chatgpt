@@ -13,7 +13,7 @@ interface Conversation {
 }
 
 export class ChatPersistence {
-  private static STORAGE_KEY = 'chatgpt-conversations';
+  private static STORAGE_KEY = 'nexa-conversations';
 
   static saveConversation(messages: Message[]) {
     try {
