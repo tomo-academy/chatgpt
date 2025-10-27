@@ -11,6 +11,7 @@ import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import { Thread } from "@/components/assistant-ui/thread";
 import { ThreadList } from "@/components/assistant-ui/thread-list";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 type ButtonWithTooltipProps = ComponentPropsWithRef<typeof Button> & {
   tooltip: string;
@@ -85,6 +86,7 @@ const Header: FC = () => {
           <CodeIcon className="size-4" />
         </ButtonWithTooltip>
       </Link>
+      <ThemeToggle />
       <ButtonWithTooltip
         variant="outline"
         size="icon"
