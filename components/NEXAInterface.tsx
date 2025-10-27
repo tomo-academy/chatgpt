@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
-import { ModelPicker } from "./ModelPicker";
 import { Thread } from "@/components/assistant-ui/thread";
 import { ThreadList } from "@/components/assistant-ui/thread-list";
 
@@ -39,11 +38,11 @@ const ButtonWithTooltip: FC<ButtonWithTooltipProps> = ({
 
 const TopLeft: FC = () => {
   return (
-    <div className="flex h-full w-full items-center gap-2 px-3 text-sm font-semibold">
-      <div className="inline size-4 bg-blue-500 rounded-sm flex items-center justify-center">
-        <span className="text-white text-xs">⚡</span>
+    <div className="flex h-full w-full items-center gap-3 px-3 text-sm font-semibold">
+      <div className="inline size-5 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center shadow-lg">
+        <span className="text-white text-xs font-bold">⚡</span>
       </div>
-      <span>NEXA</span>
+      <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent font-bold tracking-tight">NEXA</span>
     </div>
   );
 };
@@ -75,7 +74,6 @@ const Header: FC = () => {
   return (
     <header className="flex gap-2">
       <LeftBarSheet />
-      <ModelPicker />
       <Link href="/demo">
         <ButtonWithTooltip
           variant="outline"
@@ -101,22 +99,23 @@ const Header: FC = () => {
 };
 
 export const NEXAInterface = () => {
-  const sideStyle = "bg-muted/40 px-3 py-2";
-  const topStyle = "border-b";
-  const leftStyle = "border-r hidden md:block";
+  const sideStyle = "bg-gradient-to-b from-muted/30 to-muted/50 backdrop-blur-sm px-3 py-2 border-r border-border/50";
+  const topStyle = "border-b border-border/50 shadow-sm";
+  const leftStyle = "hidden md:block";
 
   return (
-    <div className="grid h-full w-full grid-flow-col grid-rows-[auto_1fr] md:grid-cols-[250px_1fr]">
+    <div className="grid h-full w-full grid-flow-col grid-rows-[auto_1fr] md:grid-cols-[250px_1fr] bg-gradient-to-br from-background via-background to-muted/20">
       <div className={cn(sideStyle, leftStyle, topStyle)}>
         <TopLeft />
       </div>
       <div className={cn(sideStyle, leftStyle, "overflow-y-auto")}>
         <MainLeft />
       </div>
-      <div className={cn(sideStyle, topStyle)}>
+      <div className={cn("bg-gradient-to-r from-background/95 to-background backdrop-blur-sm px-3 py-2", topStyle)}>
         <Header />
       </div>
-      <div className="overflow-hidden bg-background">
+      <div className="overflow-hidden bg-background relative">
+        <div className="absolute inset-0 bg-gradient-to-br from-background via-transparent to-muted/10 pointer-events-none"></div>
         <Thread />
       </div>
     </div>

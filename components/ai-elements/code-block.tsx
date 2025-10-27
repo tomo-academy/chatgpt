@@ -99,8 +99,10 @@ export function CodeBlock({
     <CodeBlockContext.Provider value={{ code }}>
       <div
         className={cn(
-          "relative rounded-lg border overflow-hidden",
-          isDark ? "bg-gray-900 border-gray-700" : "bg-gray-50 border-gray-200",
+          "relative rounded-xl border-0 overflow-hidden shadow-xl backdrop-blur-sm",
+          isDark 
+            ? "bg-gradient-to-br from-gray-900/90 to-black/90 ring-1 ring-white/10" 
+            : "bg-gradient-to-br from-gray-50/90 to-white/90 ring-1 ring-black/10",
           className
         )}
         {...props}
@@ -114,10 +116,10 @@ export function CodeBlock({
         {/* Language label */}
         {language && (
           <div className={cn(
-            "px-4 py-2 text-xs font-medium border-b",
+            "px-4 py-3 text-xs font-medium border-b backdrop-blur-sm",
             isDark 
-              ? "bg-gray-800 border-gray-700 text-gray-300" 
-              : "bg-gray-100 border-gray-200 text-gray-600"
+              ? "bg-gradient-to-r from-gray-800/80 to-gray-900/80 border-white/10 text-gray-300" 
+              : "bg-gradient-to-r from-gray-100/80 to-gray-200/80 border-black/10 text-gray-600"
           )}>
             {language}
           </div>
@@ -200,10 +202,10 @@ export function CodeBlockCopyButton({
       size="sm"
       onClick={handleCopy}
       className={cn(
-        "h-8 px-3 text-xs font-medium transition-all duration-200",
+        "h-9 px-3 text-xs font-medium transition-all duration-200 rounded-lg shadow-lg hover:shadow-xl",
         copied 
-          ? "bg-green-500 text-white hover:bg-green-600" 
-          : "bg-background/80 backdrop-blur-sm text-foreground hover:bg-background",
+          ? "bg-gradient-to-r from-green-500 to-emerald-500 text-white hover:from-green-600 hover:to-emerald-600 transform scale-105" 
+          : "bg-background/90 backdrop-blur-sm text-foreground hover:bg-background/95 border border-border/50 hover:border-border",
         className
       )}
       {...props}

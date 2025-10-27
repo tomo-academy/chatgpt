@@ -17,7 +17,7 @@ interface PromptInputSubmitProps extends React.ComponentProps<typeof Button> {
 
 export function Input({ onSubmit, children, className, ...props }: InputProps) {
   return (
-    <form onSubmit={onSubmit} className={cn("relative", className)} {...props}>
+    <form onSubmit={onSubmit} className={cn("relative rounded-xl", className)} {...props}>
       {children}
     </form>
   );
@@ -30,7 +30,7 @@ export function PromptInputTextarea({
   return (
     <textarea
       className={cn(
-        "flex min-h-[60px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 resize-none",
+        "flex min-h-[48px] w-full rounded-xl border-0 bg-muted/50 backdrop-blur-sm px-4 py-3 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:ring-offset-0 disabled:cursor-not-allowed disabled:opacity-50 resize-none transition-all duration-200 shadow-lg hover:shadow-xl dark:bg-muted/30 dark:hover:bg-muted/40",
         className
       )}
       {...props}
@@ -51,7 +51,7 @@ export function PromptInputSubmit({
       type="submit"
       size="sm"
       className={cn(
-        "h-8 w-8 p-0",
+        "h-10 w-10 p-0 rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg transition-all duration-200 hover:shadow-xl hover:scale-105 disabled:hover:scale-100 disabled:hover:shadow-lg",
         className
       )}
       disabled={isStreaming}
