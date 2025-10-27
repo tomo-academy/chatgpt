@@ -29,6 +29,15 @@ export default function CodeBlockDemo() {
 
   // Example code blocks for demonstration
   const exampleCode = {
+    simpleReact: `function MyComponent(props) {
+  return (
+    <div>
+      <h1>Hello, {props.name}!</h1>
+      <p>This is an example React component.</p>
+    </div>
+  );
+}`,
+    
     javascript: `function fibonacci(n) {
   if (n <= 1) return n;
   return fibonacci(n - 1) + fibonacci(n - 2);
@@ -168,6 +177,21 @@ export default TodoList;`,
           <h2 className="text-2xl font-semibold mb-6">Examples</h2>
           
           <div className="grid gap-8 lg:grid-cols-2">
+            {/* Simple React Example - Your Example */}
+            <div>
+              <h3 className="text-lg font-medium mb-4">Simple React Component (Your Example)</h3>
+              <CodeBlock
+                code={exampleCode.simpleReact}
+                language="jsx"
+                showLineNumbers={false}
+              >
+                <CodeBlockCopyButton
+                  onCopy={() => console.log('Copied code to clipboard')}
+                  onError={() => console.error('Failed to copy code to clipboard')}
+                />
+              </CodeBlock>
+            </div>
+
             {/* JavaScript Example */}
             <div>
               <h3 className="text-lg font-medium mb-4">JavaScript (with line numbers)</h3>
@@ -181,14 +205,16 @@ export default TodoList;`,
                 />
               </CodeBlock>
             </div>
+          </div>
 
+          <div className="mt-8">
             {/* React Example */}
             <div>
-              <h3 className="text-lg font-medium mb-4">React Component (no line numbers)</h3>
+              <h3 className="text-lg font-medium mb-4">Complex React Component (Todo List)</h3>
               <CodeBlock
                 code={exampleCode.react}
                 language="jsx"
-                showLineNumbers={false}
+                showLineNumbers={true}
               >
                 <CodeBlockCopyButton
                   onCopy={() => console.log('React code copied!')}

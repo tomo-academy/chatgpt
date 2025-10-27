@@ -1,6 +1,6 @@
 "use client";
 
-import { MenuIcon, ShareIcon, CodeIcon } from "lucide-react";
+import { MenuIcon, ShareIcon, CodeIcon, FlaskConicalIcon } from "lucide-react";
 import type { TooltipContentProps } from "@radix-ui/react-tooltip";
 import { ComponentPropsWithRef, type FC } from "react";
 import Link from "next/link";
@@ -85,6 +85,17 @@ const Header: FC = () => {
           className="shrink-0"
         >
           <CodeIcon className="size-4" />
+        </ButtonWithTooltip>
+      </Link>
+      <Link href="/example">
+        <ButtonWithTooltip
+          variant="outline"
+          size="icon"
+          tooltip="Simple Example"
+          side="bottom"
+          className="shrink-0"
+        >
+          <FlaskConicalIcon className="size-4" />
         </ButtonWithTooltip>
       </Link>
       <ButtonWithTooltip
