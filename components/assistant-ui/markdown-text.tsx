@@ -9,9 +9,10 @@ import {
   useIsMarkdownCodeBlock,
 } from "@assistant-ui/react-markdown";
 import remarkGfm from "remark-gfm";
-import React, { type FC, memo } from "react";
+import { type FC, memo, useState } from "react";
+import { CheckIcon, CopyIcon } from "lucide-react";
 
-import { CodeBlock, CodeBlockCopyButton } from "@/components/ai-elements/code-block";
+import { TooltipIconButton } from "@/components/assistant-ui/tooltip-icon-button";
 import { cn } from "@/lib/utils";
 
 const MarkdownTextImpl = () => {
@@ -26,8 +27,43 @@ const MarkdownTextImpl = () => {
 
 export const MarkdownText = memo(MarkdownTextImpl);
 
-const CodeHeader: FC<CodeHeaderProps> = () => {
-  return null; // We'll handle this in the CodeBlock component
+const CodeHeader: FC<CodeHeaderProps> = ({ language, code }) => {
+  const { isCopied, copyToClipboard } = useCopyToClipboard();
+  const onCopy = () => {
+    if (!code || isCopied) return;
+    copyToClipboard(code);
+  };
+
+  return (
+    <div className="aui-code-header-root mt-4 flex items-center justify-between gap-4 rounded-t-lg bg-muted-foreground/15 px-4 py-2 text-sm font-semibold text-foreground dark:bg-muted-foreground/20">
+      <span className="aui-code-header-language lowercase [&>span]:text-xs">
+        {language}
+      </span>
+      <TooltipIconButton tooltip="Copy" onClick={onCopy}>
+        {!isCopied && <CopyIcon />}
+        {isCopied && <CheckIcon />}
+      </TooltipIconButton>
+    </div>
+  );
+};
+
+const useCopyToClipboard = ({
+  copiedDuration = 3000,
+}: {
+  copiedDuration?: number;
+} = {}) => {
+  const [isCopied, setIsCopied] = useState<boolean>(false);
+
+  const copyToClipboard = (value: string) => {
+    if (!value) return;
+
+    navigator.clipboard.writeText(value).then(() => {
+      setIsCopied(true);
+      setTimeout(() => setIsCopied(false), copiedDuration);
+    });
+  };
+
+  return { isCopied, copyToClipboard };
 };
 
 const defaultComponents = memoizeMarkdownComponents({
@@ -166,42 +202,15 @@ const defaultComponents = memoizeMarkdownComponents({
       {...props}
     />
   ),
-  pre: function Pre({ className, children, ...props }) {
-    // Check if children is a React element with code
-    if (React.isValidElement(children) && children.props) {
-      const codeElement = children.props;
-      const language = codeElement?.className?.replace('language-', '') || 'text';
-      const code = codeElement?.children || '';
-
-      if (typeof code === 'string') {
-        return (
-          <div className="my-4">
-            <CodeBlock
-              code={code.trim()}
-              language={language}
-              showLineNumbers={true}
-              className="!rounded-lg"
-            >
-              <CodeBlockCopyButton />
-            </CodeBlock>
-          </div>
-        );
-      }
-    }
-
-    // Fallback to default pre
-    return (
-      <pre
-        className={cn(
-          "aui-md-pre overflow-x-auto rounded-lg bg-black p-4 text-white",
-          className,
-        )}
-        {...props}
-      >
-        {children}
-      </pre>
-    );
-  },
+  pre: ({ className, ...props }) => (
+    <pre
+      className={cn(
+        "aui-md-pre overflow-x-auto !rounded-t-none rounded-b-lg bg-black p-4 text-white",
+        className,
+      )}
+      {...props}
+    />
+  ),
   code: function Code({ className, ...props }) {
     const isCodeBlock = useIsMarkdownCodeBlock();
     return (
