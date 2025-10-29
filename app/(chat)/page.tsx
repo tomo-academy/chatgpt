@@ -15,10 +15,14 @@ export default function ChatPage() {
   async function handleNewChat() {
     try {
       setIsCreating(true);
-      const res = await fetch(`/api/history`, {
+      const res = await fetch(`/api/chats`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title: "New chat" }),
+        body: JSON.stringify({ 
+          userId: "user-1",
+          title: "New Chat",
+          visibility: "private"
+        }),
       });
       const data = await res.json();
       if (res.ok && data?.chat?.id) {

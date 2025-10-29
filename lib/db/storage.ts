@@ -253,7 +253,7 @@ export async function getDocumentById(id: string): Promise<Document | null> {
   return documents.find((d) => d.id === id) || null;
 }
 
-export default {
+const storage = {
   // Chat functions
   readChats,
   writeChats,
@@ -285,3 +285,5 @@ export default {
   saveDocument,
   getDocumentById,
 };
+
+export default storage;
