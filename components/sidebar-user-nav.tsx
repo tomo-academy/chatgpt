@@ -32,7 +32,6 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { LoaderIcon } from "./icons";
 import { SettingsDialog } from "./settings-dialog";
 import { toast } from "./toast";
 

@@ -1,6 +1,6 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
-import type { DBMessage } from "@/lib/db/schema";
+import type { DBMessage, MessagePart, Attachment } from "@/lib/db/schema";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -19,7 +19,7 @@ export const fetcher = async (url: string) => {
 export type ChatMessage = {
   id: string;
   role: "user" | "assistant" | "system";
-  parts: any[];
+  parts: MessagePart[];
   metadata: {
     createdAt: string;
   };
@@ -27,12 +27,6 @@ export type ChatMessage = {
 
 export type MessageMetadata = {
   createdAt: string;
-};
-
-export type Attachment = {
-  name: string;
-  url: string;
-  contentType: string;
 };
 
 export function convertToUIMessages(messages: DBMessage[]): ChatMessage[] {
@@ -64,7 +58,7 @@ export function createMessage({
 }: {
   chatId: string;
   role: "user" | "assistant" | "system";
-  content: any;
+  content: { parts?: MessagePart[]; attachments?: Attachment[] };
 }): DBMessage {
   return {
     id: generateUUID(),
@@ -76,7 +70,7 @@ export function createMessage({
   };
 }
 
-export async function generateTitleFromUserMessage(message: any): Promise<string> {
+export async function generateTitleFromUserMessage(message: ChatMessage): Promise<string> {
   // Simple title generation based on first message
   const text = getTextFromMessage(message);
   if (text.length > 50) {

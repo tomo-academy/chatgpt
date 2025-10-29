@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import storage from "@/lib/db/storage";
-import { DBMessage } from "@/lib/db/schema";
 
 export async function GET(
   request: NextRequest,
@@ -27,7 +26,7 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = await params;
+    await params; // Use params to avoid unused variable warning
     const body = await request.json();
     
     const { messages } = body;

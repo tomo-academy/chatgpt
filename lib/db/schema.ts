@@ -11,6 +11,24 @@ export type User = {
   updatedAt?: Date;
 };
 
+export type MessagePart = {
+  type: "text" | "image" | "tool_call" | "tool_result";
+  text?: string;
+  image?: string;
+  toolCallId?: string;
+  toolName?: string;
+  args?: Record<string, unknown>;
+  result?: unknown;
+};
+
+export type Attachment = {
+  id: string;
+  name: string;
+  type: string;
+  size: number;
+  url: string;
+};
+
 export type Chat = {
   id: string;
   createdAt: Date;
@@ -18,7 +36,7 @@ export type Chat = {
   title: string;
   userId: string;
   visibility: "public" | "private";
-  lastContext?: any;
+  lastContext?: unknown;
 };
 
 // Database message format with parts
@@ -26,8 +44,8 @@ export type DBMessage = {
   id: string;
   chatId: string;
   role: "user" | "assistant" | "system";
-  parts: any[]; // Message parts array like reference repo
-  attachments: any[]; // Attachments array
+  parts: MessagePart[]; // Message parts array like reference repo
+  attachments: Attachment[]; // Attachments array
   createdAt: Date;
   updatedAt?: Date;
 };

@@ -36,7 +36,7 @@ export async function readChats(): Promise<Chat[]> {
       ...c,
       createdAt: c.createdAt ? new Date(c.createdAt) : new Date(),
     }));
-  } catch (e) {
+  } catch {
     await fs.promises.writeFile(CHATS_FILE, JSON.stringify([]));
     return [];
   }
@@ -103,7 +103,7 @@ export async function readMessages(): Promise<DBMessage[]> {
       ...m,
       createdAt: m.createdAt ? new Date(m.createdAt) : new Date(),
     }));
-  } catch (e) {
+  } catch {
     await fs.promises.writeFile(MESSAGES_FILE, JSON.stringify([]));
     return [];
   }
@@ -167,7 +167,7 @@ export async function readVotes(): Promise<Vote[]> {
       ...v,
       createdAt: v.createdAt ? new Date(v.createdAt) : new Date(),
     }));
-  } catch (e) {
+  } catch {
     await fs.promises.writeFile(VOTES_FILE, JSON.stringify([]));
     return [];
   }
@@ -222,7 +222,7 @@ export async function readDocuments(): Promise<Document[]> {
       ...d,
       createdAt: d.createdAt ? new Date(d.createdAt) : new Date(),
     }));
-  } catch (e) {
+  } catch {
     await fs.promises.writeFile(DOCUMENTS_FILE, JSON.stringify([]));
     return [];
   }
