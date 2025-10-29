@@ -85,16 +85,12 @@ export function getChatHistoryPaginationKey(
   }
 
   if (pageIndex === 0) {
-    return `/api/history?limit=${PAGE_SIZE}`;
+    return `/api/chats?userId=user-1&limit=${PAGE_SIZE}`;
   }
 
-  const firstChatFromPage = previousPageData.chats.at(-1);
-
-  if (!firstChatFromPage) {
-    return null;
-  }
-
-  return `/api/history?ending_before=${firstChatFromPage.id}&limit=${PAGE_SIZE}`;
+  // For now, we'll just return null for subsequent pages
+  // In a full implementation, you'd implement pagination
+  return null;
 }
 
 export function SidebarHistory({ user }: { user: User | undefined }) {
@@ -124,7 +120,7 @@ export function SidebarHistory({ user }: { user: User | undefined }) {
     : false;
 
   const handleDelete = () => {
-    const deletePromise = fetch(`/api/chat?id=${deleteId}`, {
+    const deletePromise = fetch(`/api/chats/${deleteId}`, {
       method: "DELETE",
     });
 
