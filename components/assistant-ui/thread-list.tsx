@@ -7,11 +7,15 @@ import { ArchiveIcon, PlusIcon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { TooltipIconButton } from "@/components/assistant-ui/tooltip-icon-button";
+import NewLocalChat from "@/components/assistant-ui/new-local-chat";
 
 export const ThreadList: FC = () => {
   return (
     <ThreadListPrimitive.Root className="aui-root aui-thread-list-root flex flex-col items-stretch gap-1.5">
-      <ThreadListNew />
+      <div className="flex gap-2 px-2.5 py-1">
+        <ThreadListNew />
+        <NewLocalChat />
+      </div>
       <ThreadListItems />
     </ThreadListPrimitive.Root>
   );
