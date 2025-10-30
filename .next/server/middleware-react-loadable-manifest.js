@@ -1,1 +1,1 @@
-self.__REACT_LOADABLE_MANIFEST='{"app\\\\page.tsx -> @/components/ChatApp":{"id":392,"files":["static/css/ffacb3b6719cc2cf.css","static/chunks/ba12c10f-8fc9e547190274bb.js","static/chunks/298-c1e09f16ca96cd80.js","static/chunks/700-84529d3b4047c5e0.js","static/chunks/93-e8115652403c49f2.js","static/chunks/396-d19bc0775d7fa5ed.js","static/chunks/341.3fdbdcfdb4e159ec.js","static/chunks/392.e5ff181b4a0f0c6f.js"]}}';
+self.__REACT_LOADABLE_MANIFEST="{}"
