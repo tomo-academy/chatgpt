@@ -4,13 +4,36 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { User } from "@/lib/types";
 import { Button } from "@/components/ui/button";
-import { Sidebar, SidebarBody } from "@/components/sidebar";
-import { IconPlus } from "@tabler/icons-react";
+import { Sidebar, SidebarBody, SidebarLink } from "@/components/sidebar";
+import { IconPlus, IconHome, IconPhoto, IconUpload, IconSettings, IconUser } from "@tabler/icons-react";
 import { motion } from "motion/react";
 import Image from "next/image";
 
 export function AnimatedAppSidebar({ user }: { user: User | undefined }) {
   const router = useRouter();
+
+  const links = [
+    {
+      label: "Home",
+      href: "/",
+      icon: <IconHome className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />,
+    },
+    {
+      label: "Gallery",
+      href: "#",
+      icon: <IconPhoto className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />,
+    },
+    {
+      label: "Upload",
+      href: "#",
+      icon: <IconUpload className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />,
+    },
+    {
+      label: "Settings",
+      href: "#",
+      icon: <IconSettings className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />,
+    },
+  ];
 
   return (
     <Sidebar>
@@ -19,7 +42,7 @@ export function AnimatedAppSidebar({ user }: { user: User | undefined }) {
           <Logo />
           
           <Button
-            className="mt-4 mb-6 w-full"
+            className="mt-4 mb-6 w-full justify-start"
             onClick={() => {
               router.push("/");
               router.refresh();
@@ -27,34 +50,54 @@ export function AnimatedAppSidebar({ user }: { user: User | undefined }) {
             type="button"
             variant="default"
           >
-            <IconPlus className="h-4 w-4 mr-2" />
+            <IconPlus className="h-4 w-4 mr-2 shrink-0" />
             <span>New Chat</span>
           </Button>
 
-          {!user ? (
-            <div className="flex h-full w-full items-center justify-center text-center text-sm text-muted-foreground px-2">
+          <div className="mt-4 flex flex-col gap-2">
+            {links.map((link, idx) => (
+              <SidebarLink key={idx} link={link} />
+            ))}
+          </div>
+
+          {!user && (
+            <div className="mt-8 flex w-full items-center justify-center text-center text-xs text-muted-foreground px-2">
               Login to save and revisit previous chats!
-            </div>
-          ) : (
-            <div className="flex flex-col space-y-2">
-              <div className="text-xs text-muted-foreground px-2">Recent Chats</div>
-              {/* SidebarHistory would go here when user is logged in */}
             </div>
           )}
         </div>
         
-        {user && (
-          <div className="border-t border-neutral-200 dark:border-neutral-700 pt-4">
-            <div className="flex items-center gap-2">
-              <div className="relative flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-muted">
-                <span className="text-xs">{user.email?.[0]?.toUpperCase()}</span>
-              </div>
-              <div className="flex flex-col overflow-hidden">
-                <span className="text-sm font-medium truncate">{user.email}</span>
-              </div>
+        <div>
+          {user ? (
+            <div className="border-t border-neutral-200 dark:border-neutral-700 pt-4">
+              <SidebarLink
+                link={{
+                  label: user.email || "User",
+                  href: "#",
+                  icon: (
+                    <Image
+                      src="https://assets.aceternity.com/manu.png"
+                      className="h-7 w-7 shrink-0 rounded-full"
+                      width={28}
+                      height={28}
+                      alt="Avatar"
+                    />
+                  ),
+                }}
+              />
             </div>
-          </div>
-        )}
+          ) : (
+            <div className="border-t border-neutral-200 dark:border-neutral-700 pt-4">
+              <SidebarLink
+                link={{
+                  label: "Login",
+                  href: "#",
+                  icon: <IconUser className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />,
+                }}
+              />
+            </div>
+          )}
+        </div>
       </SidebarBody>
     </Sidebar>
   );
