@@ -1,30 +1,16 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { User } from "@/lib/types";
-import { PlusIcon } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import { Sidebar, SidebarBody } from "@/components/sidebar";
-import { IconPlus, IconHome, IconSettings } from "@tabler/icons-react";
+import { IconPlus } from "@tabler/icons-react";
 import { motion } from "motion/react";
+import Image from "next/image";
 
 export function AnimatedAppSidebar({ user }: { user: User | undefined }) {
   const router = useRouter();
-
-  const links = [
-    {
-      label: "Home",
-      href: "/",
-      icon: <IconHome className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />,
-    },
-    {
-      label: "Settings",
-      href: "#",
-      icon: <IconSettings className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />,
-    },
-  ];
 
   return (
     <Sidebar>
@@ -81,9 +67,13 @@ const Logo = () => {
       className="relative z-20 flex items-center space-x-2 py-1 text-sm font-normal text-black"
     >
       <div className="relative flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-lg">
-        <div className="h-full w-full bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center shadow-lg">
-          <span className="text-white text-xs font-bold">⚡</span>
-        </div>
+        <Image
+          src="/AJ.svg"
+          alt="NEXA Logo"
+          width={32}
+          height={32}
+          className="object-contain"
+        />
       </div>
       <motion.span
         initial={{ opacity: 0 }}

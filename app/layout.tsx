@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   title: "NEXA AI",
   description: "NEXA - Advanced AI Assistant built with assistant-ui and Next.js",
   icons: {
-    icon: "/favicon.svg",
+    icon: "/AJ.svg",
   },
 };
 
