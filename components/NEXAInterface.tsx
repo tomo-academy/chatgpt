@@ -12,6 +12,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import { Thread } from "@/components/assistant-ui/thread";
 import { ThreadList } from "@/components/assistant-ui/thread-list";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { ModelSelector } from "@/components/model-selector";
 
 type ButtonWithTooltipProps = ComponentPropsWithRef<typeof Button> & {
   tooltip: string;
@@ -73,7 +74,7 @@ const LeftBarSheet: FC = () => {
 
 const Header: FC = () => {
   return (
-    <header className="flex gap-2">
+    <header className="flex gap-2 items-center">
       <LeftBarSheet />
       <Link href="/demo">
         <ButtonWithTooltip
@@ -86,6 +87,7 @@ const Header: FC = () => {
           <CodeIcon className="size-4" />
         </ButtonWithTooltip>
       </Link>
+      <ModelSelector />
       <ThemeToggle />
       <ButtonWithTooltip
         variant="outline"
