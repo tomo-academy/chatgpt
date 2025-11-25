@@ -6,7 +6,6 @@ import { ComponentPropsWithRef, type FC } from "react";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import { Thread } from "@/components/assistant-ui/thread";
 import { ThemeToggle } from "@/components/theme-toggle";
