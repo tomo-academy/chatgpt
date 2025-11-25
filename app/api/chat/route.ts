@@ -1,17 +1,25 @@
-import { openai } from "@ai-sdk/openai";
+import { createAzure } from "@ai-sdk/azure";
 import { convertToModelMessages, streamText } from "ai";
 import { frontendTools } from "@assistant-ui/react-ai-sdk";
 
 export const maxDuration = 30;
+
+// Azure OpenAI Configuration
+const azure = createAzure({
+  resourceName: "kamesh6592-2021-resource",
+  apiKey: process.env.AZURE_API_KEY || "",
+});
 
 export async function POST(req: Request) {
   try {
     const { messages, tools } = await req.json();
 
     const result = streamText({
-      model: openai("gpt-4o-mini"),
+      model: azure("gpt-4o-mini"),
       messages: convertToModelMessages(messages),
-      maxOutputTokens: 1200,
+      maxOutputTokens: 4096,
+      temperature: 1,
+      topP: 1,
       tools: tools ? {
         ...frontendTools(tools),
       } : undefined,
