@@ -13,8 +13,6 @@ import {
 const models = [
   { id: "gpt-4o-mini", name: "GPT-4o Mini", provider: "Azure OpenAI" },
   { id: "gemini-2.5-flash-lite", name: "Gemini 2.5 Flash Lite", provider: "Google" },
-  { id: "gemini-1.5-pro", name: "Gemini 1.5 Pro", provider: "Google" },
-  { id: "gemini-1.5-flash", name: "Gemini 1.5 Flash", provider: "Google" },
 ];
 
 export function ModelSelector() {
