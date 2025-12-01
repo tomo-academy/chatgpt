@@ -37,6 +37,21 @@
     --sidebar-accent-foreground: 240 5.9% 10%;
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 91.2% 59.8%;
+    
+    /* Text colors */
+    --color-text: #1a1a1a; /* gray-1000 */
+    --color-text-secondary: #6b7280; /* gray-500 */
+    --color-text-tertiary: #9ca3af; /* gray-400 */
+    --color-text-inverse: #ffffff; /* gray-0 */
+    
+    /* Semantic colors */
+    --color-text-primary: #1a1a1a; /* gray-1000 */
+    --color-background-primary-soft: #f3f4f6; /* gray-100 */
+    --color-background-primary-soft-hover: #e5e7eb; /* gray-150 */
+    --color-background-primary-soft-active: #d1d5db; /* gray-200 */
+    --color-background-primary-soft-alpha: rgba(0, 0, 0, 0.08); /* alpha-08 */
+    --color-background-primary-soft-alpha-hover: rgba(0, 0, 0, 0.12); /* alpha-12 */
+    --color-background-primary-soft-alpha-active: rgba(0, 0, 0, 0.16); /* alpha-16 */
   }
 
   .dark {
@@ -72,6 +87,21 @@
     --sidebar-accent-foreground: 240 4.8% 95.9%;
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
+    
+    /* Dark mode text colors */
+    --color-text: #ffffff; /* gray-0 for dark mode */
+    --color-text-secondary: #6b7280; /* gray-500 */
+    --color-text-tertiary: #9ca3af; /* gray-400 */
+    --color-text-inverse: #1a1a1a; /* gray-1000 for dark mode */
+    
+    /* Dark mode semantic colors */
+    --color-text-primary: #ffffff; /* white for dark mode */
+    --color-background-primary-soft: #374151; /* darker gray for dark mode */
+    --color-background-primary-soft-hover: #4b5563; /* darker gray hover */
+    --color-background-primary-soft-active: #6b7280; /* darker gray active */
+    --color-background-primary-soft-alpha: rgba(255, 255, 255, 0.08); /* white alpha for dark */
+    --color-background-primary-soft-alpha-hover: rgba(255, 255, 255, 0.12); /* white alpha hover */
+    --color-background-primary-soft-alpha-active: rgba(255, 255, 255, 0.16); /* white alpha active */
   }
 }
 

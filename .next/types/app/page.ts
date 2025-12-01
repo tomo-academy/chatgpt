@@ -1,4 +1,4 @@
-// File: E:\New folder (21)\chatgpt\app\page.tsx
+// File: E:\New folder (55)\chatgpt\app\page.tsx
 import * as entry from '../../../app/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 
