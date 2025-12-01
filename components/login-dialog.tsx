@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -20,6 +21,8 @@ import { IconLogin, IconBrandGoogle } from "@tabler/icons-react";
 import { toast } from "sonner";
 
 export function LoginDialog() {
+  const [open, setOpen] = useState(false);
+
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
@@ -29,6 +32,7 @@ export function LoginDialog() {
     toast.success("Login successful!", {
       description: `Welcome back, ${email.split("@")[0]}!`,
     });
+    setOpen(false); // Close dialog after successful login
   };
 
   const handleGoogleLogin = () => {
@@ -36,18 +40,19 @@ export function LoginDialog() {
     toast.info("Google login clicked", {
       description: "Google OAuth integration needed",
     });
+    setOpen(false); // Close dialog after Google login
   };
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="ghost" className="w-full justify-start gap-2 px-2">
+        <Button variant="ghost" className="w-full justify-start gap-2 px-2 h-auto py-2 cursor-pointer">
           <IconLogin className="h-5 w-5 shrink-0" />
           <span>Login</span>
         </Button>
       </DialogTrigger>
-      <DialogContent className="p-0 border-none bg-transparent">
-        <Card className="w-full max-w-sm mx-auto">
+      <DialogContent className="sm:max-w-[425px] p-0">
+        <Card className="w-full border-0 shadow-none">
           <CardHeader>
             <CardTitle>Login to your account</CardTitle>
             <CardDescription>
