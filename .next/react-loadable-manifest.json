@@ -1,6 +1,6 @@
 {
   "app\\page.tsx -> @/components/ChatApp": {
-    "id": 8334,
+    "id": 8892,
     "files": [
       "static/css/ffacb3b6719cc2cf.css",
       "static/chunks/ba12c10f-8fc9e547190274bb.js",
@@ -9,8 +9,8 @@
       "static/chunks/303-8b4d596d2670a0cb.js",
       "static/chunks/93-5723d1759e8d961a.js",
       "static/chunks/396-ad1bebb7944284d1.js",
-      "static/chunks/299.301f71901a45297f.js",
-      "static/chunks/334.20ce05a540a49f64.js"
+      "static/chunks/159.9bb7b9e040b9709e.js",
+      "static/chunks/892.bb289bd798983fbc.js"
     ]
   }
 }
