@@ -10,12 +10,12 @@ export const ModelContext = createContext<{
   selectedModel: string;
   setSelectedModel: (model: string) => void;
 }>({
-  selectedModel: "gpt-4o-mini",
+  selectedModel: "gpt-3.5-turbo",
   setSelectedModel: () => {},
 });
 
 // Global model state
-let globalSelectedModel = "gpt-4o-mini";
+let globalSelectedModel = "gpt-3.5-turbo";
 
 // Intercept fetch to add model header
 if (typeof window !== 'undefined') {
@@ -36,7 +36,7 @@ export default function ChatProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const [selectedModel, setSelectedModel] = useState("gpt-4o-mini");
+  const [selectedModel, setSelectedModel] = useState("gpt-3.5-turbo");
   
   // Update global model state
   React.useEffect(() => {
