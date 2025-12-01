@@ -37,7 +37,7 @@ export async function POST(req: Request) {
 
     // Determine which provider to use
     let model;
-    let maxOutputTokens = Math.min(4096, modelConfig.maxTokens);
+    const maxOutputTokens = Math.min(4096, modelConfig.maxTokens);
     
     switch (modelConfig.provider) {
       case "azure":

@@ -1,16 +1,14 @@
 "use client"
 
 import * as React from "react"
-import { Check, ChevronDown, Bot, Sparkles, Zap, Brain } from "lucide-react"
+import { ChevronDown, Sparkles, Brain } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils"
 
 // AI Model types and configurations
@@ -57,8 +55,6 @@ export function AIModelSelector({
   onModelChange, 
   className 
 }: AIModelSelectorProps) {
-  const SelectedIcon = selectedModel.icon
-
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
