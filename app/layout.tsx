@@ -2,6 +2,7 @@ import "./globals.css";
 import type { Metadata } from "next";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
+import { AppLoadingProvider } from "@/components/app-loader";
 
 export const metadata: Metadata = {
   title: "NEXA AI",
@@ -25,8 +26,10 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {children}
-          <Toaster />
+          <AppLoadingProvider>
+            {children}
+            <Toaster />
+          </AppLoadingProvider>
         </ThemeProvider>
       </body>
     </html>
