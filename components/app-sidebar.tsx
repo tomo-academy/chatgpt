@@ -17,6 +17,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
+import ProfileDropdown from "@/components/kokonutui/profile-dropdown";
 
 export function AppSidebar({ user }: { user: User | undefined }) {
   const router = useRouter();
@@ -72,7 +73,19 @@ export function AppSidebar({ user }: { user: User | undefined }) {
       <SidebarContent>
         <SidebarHistory user={user} />
       </SidebarContent>
-      <SidebarFooter>{user && <SidebarUserNav user={user} />}</SidebarFooter>
+      <SidebarFooter>
+        {user && <SidebarUserNav user={user} />}
+        <ProfileDropdown 
+          data={{
+            name: user?.name || "NEXA User",
+            email: user?.email || "user@nexa.ai",
+            avatar: user?.image || "https://github.com/shadcn.png",
+            subscription: "PRO",
+            model: "GPT-4o Mini",
+          }}
+          className="w-full"
+        />
+      </SidebarFooter>
     </Sidebar>
   );
 }
