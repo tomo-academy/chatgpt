@@ -85,20 +85,20 @@ export function EnhancedModelSelector({
       <ModelSelectorTrigger asChild>
         <Button
           variant="outline"
-          className={`justify-between h-10 min-w-[220px] bg-background/60 backdrop-blur-sm border-border/50 hover:bg-accent/50 hover:border-border transition-all duration-200 ${className}`}
+          className={`justify-between h-9 min-w-[200px] bg-card border-border hover:bg-accent hover:text-accent-foreground transition-colors ${className}`}
         >
-          <div className="flex items-center gap-3 min-w-0 flex-1">
-            <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 min-w-0 flex-1">
+            <div className="flex items-center gap-1.5">
               {currentModel.providerLogo && (
                 <ModelSelectorLogo 
                   provider={currentModel.providerLogo} 
-                  className="size-4"
+                  className="size-3.5"
                 />
               )}
-              <currentModel.icon className="size-4 text-primary" />
+              <currentModel.icon className="size-3.5 text-foreground" />
             </div>
             <div className="flex flex-col items-start min-w-0 flex-1">
-              <span className="font-medium text-sm text-foreground truncate">
+              <span className="font-medium text-sm text-card-foreground truncate">
                 {currentModel.name}
               </span>
               <span className="text-xs text-muted-foreground truncate">
@@ -106,34 +106,34 @@ export function EnhancedModelSelector({
               </span>
             </div>
           </div>
-          <ChevronDown className="h-4 w-4 shrink-0 opacity-50" />
+          <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground" />
         </Button>
       </ModelSelectorTrigger>
       
-      <ModelSelectorContent className="w-[320px] p-0" title="Select Model">
-        <ModelSelectorInput placeholder="Search models..." />
+      <ModelSelectorContent className="w-[300px] p-0" title="Select Model">
+        <ModelSelectorInput placeholder="Search models..." className="border-0 border-b border-border rounded-none" />
         <ModelSelectorList>
           <ModelSelectorEmpty>No models found.</ModelSelectorEmpty>
           
-          <ModelSelectorGroup heading="Available Models">
+          <ModelSelectorGroup heading="Models">
             {models.map((model) => (
               <ModelSelectorItem
                 key={model.id}
                 value={model.id}
                 onSelect={() => handleModelSelect(model.id)}
-                className="flex items-center gap-3 p-3 cursor-pointer hover:bg-accent/50 rounded-md mx-1 my-0.5 transition-colors"
+                className="flex items-center gap-3 p-3 cursor-pointer hover:bg-accent hover:text-accent-foreground rounded-none transition-colors"
               >
                 <div className="flex items-center gap-2 shrink-0">
                   {model.providerLogo && (
                     <ModelSelectorLogo 
                       provider={model.providerLogo} 
-                      className="size-4"
+                      className="size-3.5"
                     />
                   )}
-                  <model.icon className="size-4 text-primary" />
+                  <model.icon className="size-3.5 text-foreground" />
                 </div>
                 <div className="flex flex-col items-start min-w-0 flex-1">
-                  <ModelSelectorName className="font-medium text-sm">
+                  <ModelSelectorName className="font-medium text-sm text-card-foreground">
                     {model.name}
                   </ModelSelectorName>
                   <div className="text-xs text-muted-foreground">
@@ -141,7 +141,7 @@ export function EnhancedModelSelector({
                   </div>
                 </div>
                 {selectedModel === model.id && (
-                  <Check className="h-4 w-4 text-primary shrink-0" />
+                  <Check className="h-4 w-4 text-foreground shrink-0" />
                 )}
               </ModelSelectorItem>
             ))}

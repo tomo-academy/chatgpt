@@ -73,18 +73,17 @@ export function AppSidebar({ user }: { user: User | undefined }) {
       <SidebarContent>
         <SidebarHistory user={user} />
       </SidebarContent>
-      <SidebarFooter>
-        {user && <SidebarUserNav user={user} />}
+      <SidebarFooter className="p-2">
         <ProfileDropdown 
           data={{
             name: user?.name || "NEXA User",
             email: user?.email || "user@nexa.ai",
             avatar: user?.image || "https://github.com/shadcn.png",
-            subscription: "PRO",
+            subscription: "Pro",
             model: "GPT-4o Mini",
           }}
-          className="w-full"
         />
+        {user && <SidebarUserNav user={user} />}
       </SidebarFooter>
     </Sidebar>
   );

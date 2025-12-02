@@ -41,37 +41,38 @@ const ButtonWithTooltip: FC<ButtonWithTooltipProps> = ({
 
 const Header: FC = () => {
   return (
-    <header className="flex gap-3 items-center px-6 py-4 border-b border-border/50 bg-background/80 backdrop-blur-md supports-[backdrop-filter]:bg-background/60">
-      <SidebarTrigger className="md:hidden -ml-2" />
+    <header className="flex gap-4 items-center px-6 py-3 border-b border-border bg-card">
+      <SidebarTrigger className="md:hidden -ml-1" />
       
       {/* Logo and Title for larger screens */}
-      <div className="hidden lg:flex items-center gap-3 mr-4">
+      <div className="hidden lg:flex items-center gap-3">
         <div className="flex items-center gap-2">
-          <div className="size-8 rounded-lg bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
-            <Sparkles className="size-4 text-primary" />
+          <div className="size-7 rounded-md bg-primary flex items-center justify-center">
+            <Sparkles className="size-4 text-primary-foreground" />
           </div>
           <div className="flex flex-col">
-            <span className="font-semibold text-sm text-foreground">NEXA AI</span>
-            <span className="text-xs text-muted-foreground">Intelligent Assistant</span>
+            <span className="font-medium text-sm text-card-foreground">NEXA</span>
+            <span className="text-xs text-muted-foreground">AI Assistant</span>
           </div>
         </div>
       </div>
 
       {/* Model Selector */}
-      <EnhancedModelSelector className="flex-1 max-w-xs" />
+      <div className="flex-1">
+        <EnhancedModelSelector className="max-w-xs" />
+      </div>
 
       {/* Action Buttons */}
-      <div className="flex items-center gap-2 ml-auto">
+      <div className="flex items-center gap-1">
         <Link href="/demo" className="hidden md:inline-block">
           <ButtonWithTooltip
             variant="ghost"
             size="sm"
-            tooltip="CodeBlock Demo"
+            tooltip="Demo"
             side="bottom"
-            className="shrink-0 h-9 px-3"
+            className="h-8 px-2"
           >
-            <CodeIcon className="size-4 mr-2" />
-            <span className="hidden sm:inline">Demo</span>
+            <CodeIcon className="size-4" />
           </ButtonWithTooltip>
         </Link>
         
@@ -81,12 +82,11 @@ const Header: FC = () => {
         <ButtonWithTooltip
           variant="ghost"
           size="sm"
-          tooltip="Share Conversation"
+          tooltip="Share"
           side="bottom"
-          className="shrink-0 h-9 px-3"
+          className="h-8 px-2"
         >
-          <ShareIcon className="size-4 mr-2" />
-          <span className="hidden sm:inline">Share</span>
+          <ShareIcon className="size-4" />
         </ButtonWithTooltip>
       </div>
     </header>
@@ -102,8 +102,7 @@ export const NEXAInterface = () => {
       <AppSidebar user={user} />
       <SidebarInset>
         <Header />
-        <div className="flex-1 overflow-hidden bg-background relative">
-          <div className="absolute inset-0 bg-gradient-to-br from-background via-transparent to-muted/10 pointer-events-none"></div>
+        <div className="flex-1 overflow-hidden bg-background">
           <Thread />
         </div>
       </SidebarInset>
