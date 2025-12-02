@@ -105,8 +105,8 @@ const useDropdownContext = () => {
 // Main Dropdown component
 export function Dropdown({ children, className = "" }: DropdownProps) {
   const [open, setOpen] = useState(false)
-  const triggerRef = useRef<HTMLDivElement>(null)
-  const contentRef = useRef<HTMLDivElement>(null)
+  const triggerRef = useRef<HTMLDivElement | null>(null)
+  const contentRef = useRef<HTMLDivElement | null>(null)
 
   return (
     <DropdownContext.Provider value={{ open, setOpen, triggerRef, contentRef }}>

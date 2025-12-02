@@ -10,7 +10,8 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import { Thread } from "@/components/assistant-ui/thread";
 import { ToggleTheme } from "@/components/toggle-theme";
 import { ModelSelector } from "@/components/model-selector";
-import { Frame760 } from "@/components/sidebar-component";
+import { AppSidebar } from "@/components/app-sidebar";
+import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import { Dropdown, DropdownTrigger, DropdownContent, DropdownItem, DropdownSeparator } from "@/components/basic-dropdown";
 import PrivacyPolicyModal from "@/components/privacy-policy-modal";
 import { UserIcon, SettingsIcon, LogOutIcon } from "lucide-react";
@@ -41,7 +42,8 @@ const ButtonWithTooltip: FC<ButtonWithTooltipProps> = ({
 
 const Header: FC = () => {
   return (
-    <header className="flex gap-2 items-center px-4 py-3 border-b border-border/50 bg-gradient-to-r from-background/95 to-background backdrop-blur-sm">
+    <header className="flex gap-2 items-center px-4 py-3 border-b border-sidebar-border bg-sidebar/95 backdrop-blur-sm">
+      <SidebarTrigger className="md:hidden" />
       <Link href="/demo" className="hidden md:inline-block">
         <ButtonWithTooltip
           variant="outline"
@@ -92,16 +94,19 @@ const Header: FC = () => {
 };
 
 export const NEXAInterface = () => {
+  // Note: user will be undefined for now - can be integrated with auth later
+  const user = undefined;
+
   return (
-    <div className="flex h-screen w-full bg-gradient-to-br from-background via-background to-muted/20">
-      <Frame760 />
-      <div className="flex flex-col flex-1 md:ml-0">
+    <SidebarProvider>
+      <AppSidebar user={user} />
+      <SidebarInset>
         <Header />
         <div className="flex-1 overflow-hidden bg-background relative">
           <div className="absolute inset-0 bg-gradient-to-br from-background via-transparent to-muted/10 pointer-events-none"></div>
           <Thread />
         </div>
-      </div>
-    </div>
+      </SidebarInset>
+    </SidebarProvider>
   );
 };
