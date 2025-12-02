@@ -10,7 +10,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import { Thread } from "@/components/assistant-ui/thread";
 import { ToggleTheme } from "@/components/toggle-theme";
 import { ModelSelector } from "@/components/model-selector";
-import { AnimatedAppSidebar } from "@/components/animated-app-sidebar";
+import { Frame760 } from "@/components/sidebar-component";
 
 type ButtonWithTooltipProps = ComponentPropsWithRef<typeof Button> & {
   tooltip: string;
@@ -66,12 +66,9 @@ const Header: FC = () => {
 };
 
 export const NEXAInterface = () => {
-  // Note: user will be undefined for now - can be integrated with auth later
-  const user = undefined;
-
   return (
     <div className="flex h-screen w-full bg-gradient-to-br from-background via-background to-muted/20">
-      <AnimatedAppSidebar user={user} />
+      <Frame760 />
       <div className="flex flex-col flex-1 md:ml-0">
         <Header />
         <div className="flex-1 overflow-hidden bg-background relative">
