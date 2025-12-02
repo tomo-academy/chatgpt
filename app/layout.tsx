@@ -3,6 +3,8 @@ import type { Metadata } from "next";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { AppLoadingProvider } from "@/components/app-loader";
+import { AppsSDKUIProvider } from "@openai/apps-sdk-ui/components/AppsSDKUIProvider";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "NEXA AI",
@@ -26,10 +28,12 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <AppLoadingProvider>
-            {children}
-            <Toaster />
-          </AppLoadingProvider>
+          <AppsSDKUIProvider linkComponent={Link}>
+            <AppLoadingProvider>
+              {children}
+              <Toaster />
+            </AppLoadingProvider>
+          </AppsSDKUIProvider>
         </ThemeProvider>
       </body>
     </html>
