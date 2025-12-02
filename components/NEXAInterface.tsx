@@ -8,7 +8,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import { Thread } from "@/components/assistant-ui/thread";
-import { ThemeToggle } from "@/components/theme-toggle";
+import { ToggleTheme } from "@/components/toggle-theme";
 import { ModelSelector } from "@/components/model-selector";
 import { AnimatedAppSidebar } from "@/components/animated-app-sidebar";
 
@@ -51,7 +51,7 @@ const Header: FC = () => {
         </ButtonWithTooltip>
       </Link>
       <ModelSelector />
-      <ThemeToggle />
+      <ToggleTheme />
       <ButtonWithTooltip
         variant="outline"
         size="icon"
