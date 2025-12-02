@@ -14,28 +14,27 @@ import {
 export interface Workspace {
 	id: string;
 	name: string;
-	[key: string]: any; // Allow additional properties
+	logo?: string;
+	plan?: string;
 }
 
 // Context for workspace state management
-interface WorkspaceContextValue<T extends Workspace> {
+interface WorkspaceContextValue {
 	open: boolean;
 	setOpen: (open: boolean) => void;
-	selectedWorkspace: T | undefined;
-	workspaces: T[];
-	onWorkspaceSelect: (workspace: T) => void;
-	getWorkspaceId: (workspace: T) => string;
-	getWorkspaceName: (workspace: T) => string;
+	selectedWorkspace: Workspace | undefined;
+	workspaces: Workspace[];
+	onWorkspaceSelect: (workspace: Workspace) => void;
+	getWorkspaceId: (workspace: Workspace) => string;
+	getWorkspaceName: (workspace: Workspace) => string;
 }
 
-const WorkspaceContext = React.createContext<WorkspaceContextValue<any> | null>(
+const WorkspaceContext = React.createContext<WorkspaceContextValue | null>(
 	null,
 );
 
-function useWorkspaceContext<T extends Workspace>() {
-	const context = React.useContext(
-		WorkspaceContext,
-	) as WorkspaceContextValue<T> | null;
+function useWorkspaceContext() {
+	const context = React.useContext(WorkspaceContext);
 	if (!context) {
 		throw new Error(
 			'Workspace components must be used within WorkspaceProvider',
@@ -45,18 +44,18 @@ function useWorkspaceContext<T extends Workspace>() {
 }
 
 // Main provider component
-interface WorkspaceProviderProps<T extends Workspace> {
+interface WorkspaceProviderProps {
 	children: React.ReactNode;
-	workspaces: T[];
+	workspaces: Workspace[];
 	selectedWorkspaceId?: string;
-	onWorkspaceChange?: (workspace: T) => void;
+	onWorkspaceChange?: (workspace: Workspace) => void;
 	open?: boolean;
 	onOpenChange?: (open: boolean) => void;
-	getWorkspaceId?: (workspace: T) => string;
-	getWorkspaceName?: (workspace: T) => string;
+	getWorkspaceId?: (workspace: Workspace) => string;
+	getWorkspaceName?: (workspace: Workspace) => string;
 }
 
-function WorkspaceProvider<T extends Workspace>({
+function WorkspaceProvider({
 	children,
 	workspaces,
 	selectedWorkspaceId,
@@ -65,7 +64,7 @@ function WorkspaceProvider<T extends Workspace>({
 	onOpenChange,
 	getWorkspaceId = (workspace) => workspace.id,
 	getWorkspaceName = (workspace) => workspace.name,
-}: WorkspaceProviderProps<T>) {
+}: WorkspaceProviderProps) {
 	const [internalOpen, setInternalOpen] = React.useState(false);
 
 	const open = controlledOpen ?? internalOpen;
@@ -80,14 +79,14 @@ function WorkspaceProvider<T extends Workspace>({
 	}, [workspaces, selectedWorkspaceId, getWorkspaceId]);
 
 	const handleWorkspaceSelect = React.useCallback(
-		(workspace: T) => {
+		(workspace: Workspace) => {
 			onWorkspaceChange?.(workspace);
 			setOpen(false);
 		},
 		[onWorkspaceChange, setOpen],
 	);
 
-	const value: WorkspaceContextValue<T> = {
+	const value: WorkspaceContextValue = {
 		open,
 		setOpen,
 		selectedWorkspace,
@@ -146,7 +145,7 @@ function WorkspaceTrigger({
 				<div className="flex min-w-0 flex-1 items-center gap-2">
 					<Avatar className="h-6 w-6">
 						<AvatarImage
-							src={(selectedWorkspace as any).logo}
+							src={selectedWorkspace.logo}
 							alt={getWorkspaceName(selectedWorkspace)}
 						/>
 						<AvatarFallback className="text-xs">
@@ -212,7 +211,7 @@ function WorkspaceContent({
 		<div className="flex min-w-0 flex-1 items-center gap-2">
 			<Avatar className="h-6 w-6">
 				<AvatarImage
-					src={(workspace as any).logo}
+					src={workspace.logo}
 					alt={getWorkspaceName(workspace)}
 				/>
 				<AvatarFallback className="text-xs">
@@ -221,9 +220,9 @@ function WorkspaceContent({
 			</Avatar>
 			<div className="flex min-w-0 flex-1 flex-col items-start">
 				<span className="truncate text-sm">{getWorkspaceName(workspace)}</span>
-				{(workspace as any).plan && (
+				{workspace.plan && (
 					<span className="text-muted-foreground text-xs">
-						{(workspace as any).plan}
+						{workspace.plan}
 					</span>
 				)}
 			</div>

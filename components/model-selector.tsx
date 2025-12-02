@@ -48,7 +48,8 @@ export function ModelSelector() {
     logo: undefined, // We'll use the icon instead
   }));
 
-  const handleModelChange = (model: WorkspaceModel) => {
+  const handleModelChange = (workspace: import("./workspaces").Workspace) => {
+    const model = workspace as WorkspaceModel;
     setSelectedModel(model.id);
   };
 

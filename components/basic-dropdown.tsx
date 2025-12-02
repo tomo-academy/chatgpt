@@ -83,8 +83,8 @@ interface DropdownSeparatorProps {
 type DropdownContextType = {
   open: boolean
   setOpen: React.Dispatch<React.SetStateAction<boolean>>
-  triggerRef: React.RefObject<HTMLDivElement | null>
-  contentRef: React.RefObject<HTMLDivElement | null>
+  triggerRef: React.RefObject<HTMLDivElement>
+  contentRef: React.RefObject<HTMLDivElement>
 }
 
 const DropdownContext = React.createContext<DropdownContextType | undefined>(
@@ -253,36 +253,18 @@ export function DropdownContent({
         y: yOffset,
         x: xOffset,
         scale: 0.95,
-        transition: {
-          y: { type: "spring", stiffness: 700, damping: 35 },
-          x: { type: "spring", stiffness: 700, damping: 35 },
-          opacity: { duration: 0.1, ease: "easeInOut" },
-          scale: { duration: 0.1, ease: "easeInOut" },
-        },
       },
       visible: {
         opacity: 1,
         y: 0,
         x: 0,
         scale: 1,
-        transition: {
-          y: { type: "spring", stiffness: 700, damping: 35 },
-          x: { type: "spring", stiffness: 700, damping: 35 },
-          opacity: { duration: 0.15, ease: "easeInOut" },
-          scale: { duration: 0.1, ease: "easeInOut" },
-        },
       },
       exit: {
         opacity: 0,
         y: yOffset,
         x: xOffset,
         scale: 0.95,
-        transition: {
-          y: { type: "spring", stiffness: 500, damping: 25 },
-          x: { type: "spring", stiffness: 500, damping: 25 },
-          opacity: { duration: 0.1, ease: "easeInOut" },
-          scale: { duration: 0.1, ease: "easeInOut" },
-        },
       },
     }
   }, [actualPlacement, side, align])
@@ -296,6 +278,7 @@ export function DropdownContent({
           initial="hidden"
           animate="visible"
           exit="exit"
+          transition={{ duration: 0.2, ease: "easeInOut" }}
           style={{ transformOrigin: getTransformOrigin() }}
           className={`absolute z-[9999] min-w-[8rem] overflow-hidden rounded-md border border-border bg-card text-card-foreground p-1 shadow-md shadow-[0_2px_8px_rgba(0,0,0,0.05)] dark:shadow-[0_2px_10px_rgba(0,0,0,0.3)] ${positionClasses} ${alignmentClasses} ${className}`}
           role="menu"
