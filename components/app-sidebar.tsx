@@ -1,12 +1,10 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { User } from "@/lib/types";
 import { PlusIcon } from "@/components/icons";
 import { SidebarHistory } from "@/components/sidebar-history";
-import { SidebarUserNav } from "@/components/sidebar-user-nav";
 import { Button } from "@/components/ui/button";
 import {
   Sidebar,
@@ -25,33 +23,24 @@ export function AppSidebar({ user }: { user: User | undefined }) {
 
   return (
     <Sidebar className="group-data-[side=left]:border-r-0">
-      <SidebarHeader>
+      <SidebarHeader className="p-3">
         <SidebarMenu>
-          <div className="flex flex-row items-center justify-between">
+          <div className="flex items-center justify-between">
             <Link
-              className="flex flex-row items-center gap-3"
+              className="flex items-center gap-2 px-2 py-1 rounded-lg hover:bg-accent transition-colors"
               href="/"
               onClick={() => {
                 setOpenMobile(false);
               }}
             >
-              <div className="relative flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-lg">
-                <Image
-                  src="/logo.jpg"
-                  alt="Logo"
-                  width={32}
-                  height={32}
-                  className="object-cover"
-                />
-              </div>
-              <span className="cursor-pointer rounded-md px-2 font-semibold text-lg hover:bg-muted">
-                NEXA
+              <span className="font-semibold text-base">
+                ChatGPT
               </span>
             </Link>
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
-                  className="h-8 p-1 md:h-fit md:p-2"
+                  className="h-8 w-8 p-0"
                   onClick={() => {
                     setOpenMobile(false);
                     router.push("/");
@@ -59,11 +48,12 @@ export function AppSidebar({ user }: { user: User | undefined }) {
                   }}
                   type="button"
                   variant="ghost"
+                  size="sm"
                 >
                   <PlusIcon />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent align="end" className="hidden md:block">
+              <TooltipContent align="end" side="bottom">
                 New Chat
               </TooltipContent>
             </Tooltip>
@@ -73,17 +63,16 @@ export function AppSidebar({ user }: { user: User | undefined }) {
       <SidebarContent>
         <SidebarHistory user={user} />
       </SidebarContent>
-      <SidebarFooter className="p-2">
+      <SidebarFooter className="p-3 border-t border-border">
         <ProfileDropdown 
           data={{
-            name: user?.name || "NEXA User",
-            email: user?.email || "user@nexa.ai",
+            name: user?.name || "User",
+            email: user?.email || "user@example.com",
             avatar: user?.image || "https://github.com/shadcn.png",
-            subscription: "Pro",
-            model: "GPT-4o Mini",
+            subscription: "Plus",
+            model: "GPT-4",
           }}
         />
-        {user && <SidebarUserNav user={user} />}
       </SidebarFooter>
     </Sidebar>
   );

@@ -67,7 +67,9 @@ export default function PrivacyPolicyModal() {
   return (
       <Dialog>
         <DialogTrigger asChild>
-          <Button variant="secondary">View Privacy Policy</Button>
+          <Button variant="ghost" size="sm" className="p-2 h-auto">
+            View Privacy Policy
+          </Button>
         </DialogTrigger>
         <DialogContent className="flex flex-col p-0 sm:max-h-[80vh] sm:max-w-md gap-0 !rounded-2xl">
           <DialogHeader className="px-6 py-4 border-b border-gray-200 dark:border-gray-800">

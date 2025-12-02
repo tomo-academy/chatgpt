@@ -3,7 +3,6 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 import { Settings, CreditCard, FileText, LogOut, User } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import {
     DropdownMenu,
@@ -86,25 +85,14 @@ export default function ProfileDropdown({
                     <DropdownMenuTrigger asChild>
                         <button
                             type="button"
-                            className="flex items-center gap-3 p-2 rounded-md bg-card border border-border hover:bg-accent hover:text-accent-foreground transition-colors focus:outline-none w-full"
+                            className="flex items-center gap-2 p-2 rounded-lg hover:bg-accent transition-colors focus:outline-none w-full text-left"
                         >
-                            <div className="relative">
-                                <div className="w-8 h-8 rounded-full bg-muted p-0.5">
-                                    <Image
-                                        src={data.avatar}
-                                        alt={data.name}
-                                        width={28}
-                                        height={28}
-                                        className="w-full h-full object-cover rounded-full"
-                                    />
-                                </div>
+                            <div className="w-7 h-7 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-sm font-medium">
+                                {data.name.charAt(0)}
                             </div>
-                            <div className="text-left flex-1 min-w-0">
-                                <div className="text-sm font-medium text-card-foreground truncate">
+                            <div className="flex-1 min-w-0">
+                                <div className="text-sm text-foreground font-normal truncate">
                                     {data.name}
-                                </div>
-                                <div className="text-xs text-muted-foreground truncate">
-                                    {data.email}
                                 </div>
                             </div>
                         </button>
@@ -114,45 +102,44 @@ export default function ProfileDropdown({
 
                     <DropdownMenuContent
                         align="start"
-                        sideOffset={4}
-                        className="w-56 p-1 bg-popover border border-border rounded-md shadow-md"
+                        sideOffset={8}
+                        className="w-64 p-2 bg-popover border border-border rounded-lg shadow-lg"
                     >
+                        <div className="px-2 py-1.5 border-b border-border mb-1">
+                            <div className="font-medium text-sm">{data.name}</div>
+                            <div className="text-xs text-muted-foreground">{data.email}</div>
+                        </div>
+                        
                         <div className="space-y-0.5">
-                            {menuItems.map((item) => (
+                            {menuItems.slice(0, -1).map((item) => (
                                 <DropdownMenuItem key={item.label} asChild>
                                     <Link
                                         href={item.href}
-                                        className="flex items-center gap-2 px-2 py-1.5 hover:bg-accent hover:text-accent-foreground rounded-sm transition-colors cursor-pointer"
+                                        className="flex items-center gap-3 px-2 py-2 hover:bg-accent rounded-md transition-colors cursor-pointer"
                                     >
-                                        <div className="flex items-center gap-2 flex-1">
-                                            {item.icon}
-                                            <span className="text-sm font-normal text-popover-foreground">
-                                                {item.label}
+                                        {item.icon}
+                                        <span className="text-sm">
+                                            {item.label}
+                                        </span>
+                                        {item.value && (
+                                            <span className="ml-auto text-xs text-muted-foreground">
+                                                {item.value}
                                             </span>
-                                        </div>
-                                        <div className="flex-shrink-0">
-                                            {item.value && (
-                                                <span className="text-xs font-medium text-muted-foreground bg-muted px-1.5 py-0.5 rounded">
-                                                    {item.value}
-                                                </span>
-                                            )}
-                                        </div>
+                                        )}
                                     </Link>
                                 </DropdownMenuItem>
                             ))}
                         </div>
 
-                        <DropdownMenuSeparator className="my-1" />
+                        <DropdownMenuSeparator className="my-2" />
 
                         <DropdownMenuItem asChild>
                             <button
                                 type="button"
-                                className="w-full flex items-center gap-2 px-2 py-1.5 text-destructive hover:bg-destructive/10 hover:text-destructive rounded-sm transition-colors cursor-pointer"
+                                className="w-full flex items-center gap-3 px-2 py-2 hover:bg-accent rounded-md transition-colors cursor-pointer"
                             >
                                 <LogOut className="w-4 h-4" />
-                                <span className="text-sm font-normal">
-                                    Sign Out
-                                </span>
+                                <span className="text-sm">Log out</span>
                             </button>
                         </DropdownMenuItem>
                     </DropdownMenuContent>
