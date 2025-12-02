@@ -11,6 +11,9 @@ import { Thread } from "@/components/assistant-ui/thread";
 import { ToggleTheme } from "@/components/toggle-theme";
 import { ModelSelector } from "@/components/model-selector";
 import { Frame760 } from "@/components/sidebar-component";
+import { Dropdown, DropdownTrigger, DropdownContent, DropdownItem, DropdownSeparator } from "@/components/basic-dropdown";
+import PrivacyPolicyModal from "@/components/privacy-policy-modal";
+import { UserIcon, SettingsIcon, LogOutIcon } from "lucide-react";
 
 type ButtonWithTooltipProps = ComponentPropsWithRef<typeof Button> & {
   tooltip: string;
@@ -52,15 +55,38 @@ const Header: FC = () => {
       </Link>
       <ModelSelector />
       <ToggleTheme />
+      <PrivacyPolicyModal />
       <ButtonWithTooltip
         variant="outline"
         size="icon"
         tooltip="Share"
         side="bottom"
-        className="ml-auto shrink-0"
+        className="shrink-0"
       >
         <ShareIcon className="size-4" />
       </ButtonWithTooltip>
+      <Dropdown>
+        <DropdownTrigger>
+          <Button variant="outline" size="icon" className="ml-auto shrink-0">
+            <UserIcon className="size-4" />
+          </Button>
+        </DropdownTrigger>
+        <DropdownContent align="end">
+          <DropdownItem>
+            <UserIcon className="size-4 mr-2" />
+            Profile
+          </DropdownItem>
+          <DropdownItem>
+            <SettingsIcon className="size-4 mr-2" />
+            Settings
+          </DropdownItem>
+          <DropdownSeparator />
+          <DropdownItem destructive>
+            <LogOutIcon className="size-4 mr-2" />
+            Sign Out
+          </DropdownItem>
+        </DropdownContent>
+      </Dropdown>
     </header>
   );
 };

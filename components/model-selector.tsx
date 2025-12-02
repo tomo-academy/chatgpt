@@ -3,18 +3,18 @@
 import React, { useContext } from "react";
 import { ModelContext } from "./ChatProvider";
 import { Brain, Sparkles } from "lucide-react";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Workspaces, WorkspaceTrigger, WorkspaceContent } from "@/components/workspaces";
 
 // AI Models configuration
-const AI_MODELS = [
+interface AIModel {
+  id: string;
+  name: string;
+  provider: string;
+  description: string;
+  icon: React.ComponentType<{ className?: string }>;
+}
+
+const AI_MODELS: AIModel[] = [
   {
     id: "gpt-4o-mini",
     name: "GPT-4o Mini",
@@ -34,38 +34,64 @@ const AI_MODELS = [
 export function ModelSelector() {
   const { selectedModel, setSelectedModel } = useContext(ModelContext);
 
-  const currentModel = AI_MODELS.find(model => model.id === selectedModel) || AI_MODELS[0];
-  const CurrentIcon = currentModel.icon;
+  // Transform AI models to workspace format
+  interface WorkspaceModel extends AIModel {
+    logo?: string;
+  }
+  
+  const workspaceModels: WorkspaceModel[] = AI_MODELS.map(model => ({
+    id: model.id,
+    name: model.name,
+    provider: model.provider,
+    description: model.description,
+    icon: model.icon,
+    logo: undefined, // We'll use the icon instead
+  }));
+
+  const handleModelChange = (model: WorkspaceModel) => {
+    setSelectedModel(model.id);
+  };
 
   return (
-    <Select value={selectedModel} onValueChange={setSelectedModel}>
-      <SelectTrigger className="w-[200px]">
-        <div className="flex items-center gap-2">
-          <CurrentIcon className="size-4" />
-          <SelectValue placeholder="Select AI Model" />
-        </div>
-      </SelectTrigger>
-      <SelectContent>
-        <SelectGroup>
-          <SelectLabel>AI Models</SelectLabel>
-          {AI_MODELS.map((model) => {
-            const ModelIcon = model.icon;
-            return (
-              <SelectItem key={model.id} value={model.id}>
-                <div className="flex items-center gap-2">
-                  <ModelIcon className="size-4" />
-                  <div className="flex flex-col">
-                    <span className="font-medium">{model.name}</span>
-                    <span className="text-xs text-muted-foreground">
-                      {model.provider}
-                    </span>
-                  </div>
-                </div>
-              </SelectItem>
-            );
-          })}
-        </SelectGroup>
-      </SelectContent>
-    </Select>
+    <Workspaces
+      workspaces={workspaceModels}
+      selectedWorkspaceId={selectedModel}
+      onWorkspaceChange={handleModelChange}
+    >
+      <WorkspaceTrigger 
+        className="w-[200px]"
+        renderTrigger={(model) => {
+          const workspaceModel = model as WorkspaceModel;
+          return (
+            <div className="flex items-center gap-2">
+              {React.createElement(workspaceModel.icon, { className: "size-4" })}
+              <div className="flex flex-col items-start">
+                <span className="font-medium">{model.name}</span>
+                <span className="text-xs text-muted-foreground">
+                  {workspaceModel.provider}
+                </span>
+              </div>
+            </div>
+          );
+        }}
+      />
+      <WorkspaceContent 
+        title="AI Models"
+        renderWorkspace={(model) => {
+          const workspaceModel = model as WorkspaceModel;
+          return (
+            <div className="flex items-center gap-2">
+              {React.createElement(workspaceModel.icon, { className: "size-4" })}
+              <div className="flex flex-col items-start">
+                <span className="font-medium">{model.name}</span>
+                <span className="text-xs text-muted-foreground">
+                  {workspaceModel.provider}
+                </span>
+              </div>
+            </div>
+          );
+        }}
+      />
+    </Workspaces>
   );
 }
